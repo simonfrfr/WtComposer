@@ -1,4 +1,17 @@
+- Include new Wt 4.0 Features
 
+- Make the settings more representative of their respective properties
+
+- Add in more themes that can be imported (I.E. Bootstrap v4)
+
+- Add in Themes and theme settings for the IDE
+
+- Add in Wt Graphs
+
+- Add in Wt Payment Stuff
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////OLD///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Widgets
 - Views      
 	· WTreeTable       : Trees&Tables->Trees         : Displays a tree and more possible columns
@@ -24,6 +37,7 @@ Pipe IPC
 	· From plugin to wtcreator
 	· From wtcreator to plugin
 - When wtcreator shutdown (wtcreator to plugin)
-    ·
+    
 - When plugin shutdown (plugin to wtcreator)
-    ·
+    
+
