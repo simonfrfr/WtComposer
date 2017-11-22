@@ -35,6 +35,7 @@ WtComposer can be used as a stand-alone application in Windows, Linux, and Mac.
 ## Build Dependencies
 
 [QT 5](http://code.qt.io/cgit/qt/qt5.git/)
+
 [webkit](https://github.com/annulen/webkit)
 
 
