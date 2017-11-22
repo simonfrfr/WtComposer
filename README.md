@@ -29,9 +29,14 @@ WtComposer was created as an attempt to reduce the complexity of creating beauti
 WtComposer is a tool which is also inspired by [Qt](http://www.qt.io) (specifically QtCreator), and it is based on the Wt library and Qt frameworks. It provides an easy way to develop the front-end of web applications by means of draging-and-droping elements, blocks and templates. Furthermore, it allows to preview the looks of the application, tweak it and see the results instantly without having to recompile your application.
 
 
-WtComposer can be used as a stand-alone application in Windows (and soon Linux and Mac).
+WtComposer can be used as a stand-alone application in Windows, Linux, and Mac.
 
 ***
+## Build Dependencies
+
+[QT 5](http://code.qt.io/cgit/qt/qt5.git/)
+[webkit](https://github.com/annulen/webkit)
+
 
 ## Tutorials
 
