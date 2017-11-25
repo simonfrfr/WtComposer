@@ -1,25 +1,27 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
-// 
-// This file is part of WtDesigner.
-// 
-// WtDesigner is free software: you can redistribute it and/or modify
+// Copyright (c) 2018 TSASPC
+//
+// This file is part of WtComposer
+//
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// WtDesigner is distributed in the hope that it will be useful,
+//
+// WtComposer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "dialogconfig.h"
 #include "ui_dialogconfig.h"
 #include "helperfunctions.h"
-#include "./../myglobals.h"
+#include "../../myglobals.h"
 #include <QDebug>
+#include <QApplication>
+#include <QSettings>
 
 DialogConfig::DialogConfig(QWidget *parent) :
 QDialog(parent),
@@ -30,7 +32,14 @@ ui(new Ui::DialogConfig)
 #ifndef Q_OS_WIN
 	ui->groupBox_4->setVisible(false); // library find groubox
 #endif
-
+    auto m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
+    QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
+    QString sText = settings.value("Theme", "Light").toString();
+    extraThemes = settings.value("ExtraWtComposerThemes").value<QStringList>();
+    foreach (const QString theme, extraThemes){
+        ui->ComposerTheme->addItem(theme);
+    }
+    ui->comboBox->setCurrentIndex(ui->comboBox->findText(sText));
 	m_p_str_docroot = NULL;
 	m_p_str_http_address = NULL;
 	m_p_str_http_port = NULL;
@@ -398,4 +407,49 @@ void DialogConfig::on_combo_wtheme_currentTextChanged(const QString &arg1)
 void DialogConfig::on_line_wtitle_textEdited(const QString &arg1)
 {
 	str_wt_title = arg1;
+}
+MainWindow* DialogConfig::getMainWindow()
+{
+    foreach (QWidget *w, qApp->topLevelWidgets())
+        if (MainWindow* mainWin = qobject_cast<MainWindow*>(w))
+            return mainWin;
+    return nullptr;
+}
+void DialogConfig::on_comboBox_currentTextChanged(const QString &arg1)
+{
+    auto m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
+    QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
+    settings.setValue("Theme", QVariant::fromValue(arg1));
+    foreach (const QString theme, extraThemes){
+        if (arg1 == "Dark"){
+            QFile f(":qdarkstyle/style.qss");
+            if (!f.exists())
+            {
+                qDebug() << "[ERROR] Unable to set stylesheet, file not found.";
+            }
+            else
+            {
+                f.open(QFile::ReadOnly | QFile::Text);
+                QTextStream ts(&f);
+                qApp->setStyleSheet(ts.readAll());
+            }
+        }
+        else if (arg1 == "Light"){
+            qApp->setStyleSheet("");
+        }
+        else if (arg1 == theme){
+               QString temp = QApplication::applicationDirPath().left(1) + ":"+sText+"/.qss";
+               QFile f(temp);
+               if (!f.exists())
+               {
+                   qDebug() << "[ERROR] Unable to set stylesheet, file not found.";
+               }
+               else
+               {
+                   f.open(QFile::ReadOnly | QFile::Text);
+                   QTextStream ts(&f);
+                   qApp->setStyleSheet(ts.readAll());
+               }
+        }
+    }
 }

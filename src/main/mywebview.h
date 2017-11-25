@@ -1,24 +1,24 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
-// 
-// This file is part of WtDesigner.
-// 
-// WtDesigner is free software: you can redistribute it and/or modify
+// Copyright (c) 2018 TSASPC
+//
+// This file is part of WtComposer
+//
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// WtDesigner is distributed in the hope that it will be useful,
+//
+// WtComposer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef MYWEBVIEW_H
 #define MYWEBVIEW_H
 
-#include <QtWebKitWidgets>
+#include <QtWebEngineWidgets>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QDebug>
@@ -27,17 +27,18 @@
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <qwebelement.h>
 
 class MainWindow;
 
-class MyWebView : public QWebView
+class MyWebView : public QWebEngineView
 {
 	Q_OBJECT
 public:
 	explicit MyWebView(QWidget * parent = 0);
 
 	bool        eventFilter(QObject * watched, QEvent * event);
-	void		ChangeHoveredElemColor(QWebElement &hitTestResult);
+    void		ChangeHoveredElemColor(QWebElement &hitTestResult);
 	void        ChangeClickedElemColor(QWebElement &hitTestResult);
 	void        SetHighlightStyleClass(QString strClassName, QString &strTmpStyle);
 

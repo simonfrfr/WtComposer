@@ -42,9 +42,9 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 	if (event->type() == QEvent::MouseMove)
 	{
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-		QWebView *view          = dynamic_cast<QWebView*>(watched);
+        QWebEngineView *view          = dynamic_cast<QWebEngineView*>(watched);
 		QPoint pos              = view->mapFromGlobal(mouseEvent->globalPos());
-		QWebFrame *frame        = view->page()->frameAt(mouseEvent->pos());
+        QWebFrame *frame        = view->page()->frameAt(mouseEvent->pos());
 		if (frame!=NULL)
 		{
 			QWebHitTestResult hitTestResult = frame->hitTestContent(pos);
@@ -76,7 +76,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 		if (mouseEvent->button() == Qt::LeftButton)
 		{
-			QWebView *view = dynamic_cast<QWebView*>(watched);
+            QWebEngineView *view = dynamic_cast<QWebView*>(watched);
 			QPoint pos = view->mapFromGlobal(mouseEvent->globalPos());
 			QWebFrame *frame = view->page()->frameAt(mouseEvent->pos());
 			if (frame != NULL)

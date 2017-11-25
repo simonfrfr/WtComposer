@@ -1,19 +1,19 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
-// 
-// This file is part of WtDesigner.
-// 
-// WtDesigner is free software: you can redistribute it and/or modify
+// Copyright (c) 2018 TSASPC
+//
+// This file is part of WtComposer
+//
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// WtDesigner is distributed in the hope that it will be useful,
+//
+// WtComposer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef MIXEDCLASSES_H
 #define MIXEDCLASSES_H
@@ -24,55 +24,55 @@
 #include <QVector>
 #include <QVariant>
 
-#include <Wt/Utils>
+#include <Wt/Utils.h>
 
-#include <Wt/WObject>
-#include <Wt/WWidget>
-#include <Wt/WWebWidget>
-#include <Wt/WInteractWidget>
-#include <Wt/WFormWidget>
-#include <Wt/WCompositeWidget>
-#include <Wt/WAbstractToggleButton>
+#include <Wt/WObject.h>
+#include <Wt/WWidget.h>
+#include <Wt/WWebWidget.h>
+#include <Wt/WInteractWidget.h>
+#include <Wt/WFormWidget.h>
+#include <Wt/WCompositeWidget.h>
+#include <Wt/WAbstractToggleButton.h>
 
-#include <Wt/WContainerWidget>
-#include <Wt/WLineEdit>
-#include <Wt/WPushButton>
-#include <Wt/WText>
-#include <Wt/WAnchor>
-#include <Wt/WImage>
-#include <Wt/WFileResource>
-#include <Wt/WTemplate>
-#include <Wt/WString>
-#include <Wt/WSplitButton>
-#include <Wt/WPopupMenu>
-#include <Wt/WRadioButton>
-#include <Wt/WLabel>
-#include <Wt/WButtonGroup>
-#include <Wt/WCheckBox>
-#include <Wt/WComboBox>
-#include <Wt/WInPlaceEdit>
-#include <Wt/WTextArea>
-#include <Wt/WTextEdit>
-#include <Wt/WSelectionBox>
-#include <Wt/WSpinBox>
-#include <Wt/WDoubleSpinBox>
-#include <Wt/WTimeEdit>
-#include <Wt/WDateEdit>
-#include <Wt/WCalendar>
-#include <Wt/WSlider>
-#include <Wt/WFileUpload>
-#include <Wt/WProgressBar>
-#include <Wt/WGroupBox>
-#include <Wt/WPanel>
-#include <Wt/WStackedWidget>
-#include <Wt/WTabWidget>
-#include <Wt/WMenuItem>
-#include <Wt/WTable>
-#include <Wt/WTree>
-#include <Wt/WTreeNode>
-#include <Wt/WTreeTable>
-#include <Wt/WTreeTableNode>
-#include <Wt/WNavigationBar>
+#include <Wt/WContainerWidget.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WText.h>
+#include <Wt/WAnchor.h>
+#include <Wt/WImage.h>
+#include <Wt/WFileResource.h>
+#include <Wt/WTemplate.h>
+#include <Wt/WString.h>
+#include <Wt/WSplitButton.h>
+#include <Wt/WPopupMenu.h>
+#include <Wt/WRadioButton.h>
+#include <Wt/WLabel.h>
+#include <Wt/WButtonGroup.h>
+#include <Wt/WCheckBox.h>
+#include <Wt/WComboBox.h>
+#include <Wt/WInPlaceEdit.h>
+#include <Wt/WTextArea.h>
+#include <Wt/WTextEdit.h>
+#include <Wt/WSelectionBox.h>
+#include <Wt/WSpinBox.h>
+#include <Wt/WDoubleSpinBox.h>
+#include <Wt/WTimeEdit.h>
+#include <Wt/WDateEdit.h>
+#include <Wt/WCalendar.h>
+#include <Wt/WSlider.h>
+#include <Wt/WFileUpload.h>
+#include <Wt/WProgressBar.h>
+#include <Wt/WGroupBox.h>
+#include <Wt/WPanel.h>
+#include <Wt/WStackedWidget.h>
+#include <Wt/WTabWidget.h>
+#include <Wt/WMenuItem.h>
+#include <Wt/WTable.h>
+#include <Wt/WTree.h>
+#include <Wt/WTreeNode.h>
+#include <Wt/WTreeTable.h>
+#include <Wt/WTreeTableNode.h>
+#include <Wt/WNavigationBar.h>
 
 struct Wt_ConnectionConfig
 {

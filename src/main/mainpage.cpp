@@ -1,26 +1,26 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
-// 
-// This file is part of WtDesigner.
-// 
-// WtDesigner is free software: you can redistribute it and/or modify
+// Copyright (c) 2018 TSASPC
+//
+// This file is part of WtComposer
+//
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// WtDesigner is distributed in the hope that it will be useful,
+//
+// WtComposer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainpage.h"
 #include "mainwindow.h"
 #include "helperfunctions.h"
 
-#include <Wt/WBootstrapTheme>
-#include <Wt/WEnvironment>
+#include <Wt/WBootstrapTheme.h>
+#include <Wt/WEnvironment.h>
 
 bool MainPage::qtConnected = false;
 
@@ -33,7 +33,7 @@ MainPage::MainPage(const Wt::WEnvironment& env, MainWindow *mainwindow)
     // necessary to dynamically update webpage
     enableUpdates(true);
     // don't know if necessary
-    Wt::WString::setDefaultEncoding(Wt::UTF8);
+    Wt::WString::setDefaultEncoding(Wt::CharEncoding::UTF8);
 }
 
 MainPage::~MainPage()
@@ -105,14 +105,14 @@ void MainPage::create()
 	if (m_qtroot->m_strWtTheme.compare(g_strThemeBootstrat3) == 0)
 	{
 		Wt::WBootstrapTheme * p_wtTheme = new Wt::WBootstrapTheme();
-		p_wtTheme->setVersion(Wt::WBootstrapTheme::Version3);
-		setTheme(p_wtTheme);
+        p_wtTheme->setVersion(Wt::BootstrapVersion::v3);
+        //setTheme(p_wtTheme); //TODO: Maybe Fix
 	}
 	else if (m_qtroot->m_strWtTheme.compare(g_strThemeBootstrat2) == 0)
 	{
 		Wt::WBootstrapTheme * p_wtTheme = new Wt::WBootstrapTheme();
-		p_wtTheme->setVersion(Wt::WBootstrapTheme::Version2);
-		setTheme(p_wtTheme);
+        p_wtTheme->setVersion(Wt::BootstrapVersion::v2);
+        //setTheme(p_wtTheme);
 	}
 	else if (m_qtroot->m_strWtTheme.compare(g_strThemePolished) == 0)
 	{
@@ -408,8 +408,13 @@ WidgetFactory(QObject *qparent,
 {
     if (row >= 0 && row < static_cast<int>(wparent->children().size()))
     {
-        auto *object = new WidgetT(NULL, qparent);
-        wparent->insertWidget(row, dynamic_cast<WtWidgetT *>(object));
+        QObject * object = new WidgetT(NULL, qparent);
+        WtWidgetT* obj2 = dynamic_cast<WtWidgetT*>(object);
+        std::unique_ptr<WtWidgetT> obj3(obj2);
+        //WtWidgetT()
+        //TODO FIX THIS BELOW...................
+
+        //wparent->insertWidget(row, Wt::cpp14::make_unique<WtWidgetT>(object));
         return object;
     }
     else
@@ -482,6 +487,7 @@ QObject * MainPage::CreateWtQtInstance(QDomElement * element, int irow, Wt::WCon
         WTD_MAKE_WIDGET_LUT_ENTRY(Table),
         WTD_MAKE_WIDGET_LUT_ENTRY(Tree),
         WTD_MAKE_WIDGET_LUT_ENTRY(TreeTable),
+        //WTD_MAKE_WIDGET_LUT_ENTRY(MessageBox),
         WTD_MAKE_WIDGET_LUT_ENTRY(NavigationBar),
 
         /* special/irregular factory entries come here */

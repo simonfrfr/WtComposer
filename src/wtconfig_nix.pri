@@ -15,14 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
 
-DEFINES      += QT_NO_KEYWORDS WT_NO_SLOT_MACROS
+#DEFINES      += QT_NO_KEYWORDS WT_NO_SLOT_MACROS
 
 INCLUDEPATH  += /usr/local/include/
-
-LIBS         += -L/usr/local/lib/
-
-				
-CONFIG(debug, debug|release) {
+#LIBS         += -L/usr/local/lib/
+#LIBS += -L/usr/lib/x86_64-linux-gnu/
         LIBS += -lboost_system \
                 -lboost_thread \
                 -lwttest       \
@@ -31,15 +28,17 @@ CONFIG(debug, debug|release) {
                 -lwtdbopostgres\
                 -lwtdbosqlite3 \
                 -lwthttp
-} else {
+#CONFIG(debug, debug|release) {
 
-OBJECTS_DIR  += release
-        LIBS += -lboost_system \
-                -lboost_thread \
-                -lwttest       \
-                -lwt           \
-                -lwtdbo        \
-                -lwtdbopostgres\
-                -lwtdbosqlite3 \
-                -lwthttp
-}
+#} else {
+
+#OBJECTS_DIR  += release
+#        LIBS += -lboost_system \
+#                -lboost_thread \
+#                -lwttest       \
+#                -lwt           \
+#                -lwtdbo        \
+#                -lwtdbopostgres\
+#                -lwtdbosqlite3 \
+#                -lwthttp
+#}

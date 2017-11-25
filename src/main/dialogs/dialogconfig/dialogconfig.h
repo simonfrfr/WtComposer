@@ -1,8 +1,8 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
+// Copyright (c) 2018 TSASPC
 // 
-// This file is part of WtDesigner.
+// This file is part of WtComposer
 // 
-// WtDesigner is free software: you can redistribute it and/or modify
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef DIALOGCONFIG_H
 #define DIALOGCONFIG_H
@@ -22,6 +22,7 @@
 #include <QString>
 #include <QSettings>
 #include <QFileDialog>
+#include "../../mainwindow.h"
 
 namespace Ui {
 class DialogConfig;
@@ -88,8 +89,13 @@ private Q_SLOTS:
 
     void on_line_wtitle_textEdited(const QString &arg1);
 
+    void on_comboBox_currentTextChanged(const QString &arg1);
+
 private:
     Ui::DialogConfig *ui;
+
+    MainWindow* getMainWindow();
+    QStringList extraThemes;
 
 	QString str_docroot       ;
 	QString str_http_address  ;

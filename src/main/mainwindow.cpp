@@ -1,21 +1,22 @@
-// Copyright (c) 2016 Juan Gonzalez Burgos
-// 
-// This file is part of WtDesigner.
-// 
-// WtDesigner is free software: you can redistribute it and/or modify
+// Copyright (c) 2018 TSASPC
+//
+// This file is part of WtComposer
+//
+// WtComposer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
-// WtDesigner is distributed in the hope that it will be useful,
+//
+// WtComposer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with WtDesigner.  If not, see <http://www.gnu.org/licenses/>.
+// along with WtComposer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QApplication>
+#include <QWebEngineView>
 #include "mainwindow.h"
 #include "helperfunctions.h"
 
@@ -422,6 +423,11 @@ void MainWindow::LoadDefaultConfig()
 	StartWtServer();
 }
 
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env)
+{
+  return Wt::cpp14::make_unique<MainPage>(env); //Fix this....
+}
+
 void MainWindow::StartWtServer()
 {
     if (m_server)
@@ -450,12 +456,22 @@ void MainWindow::StartWtServer()
     m_server = std::unique_ptr < Wt::WServer
             > (new Wt::WServer(argv.size(), argv.data()));
 
-    auto wtApplicationFactory = [&](const Wt::WEnvironment& env)
+    //auto wtApplicationFactory = [&](const Wt::WEnvironment& env)
+    /*std::unique_ptr<Wt::WApplication> factory = [&](const Wt::WEnvironment &env,Wt::WServer &server) //auto wtApplicationFactory = [&](const Wt::WEnvironment& env)
     {
-        return new MainPage(env, this);
-    };
-    m_server->addEntryPoint(Wt::Application, wtApplicationFactory);
-
+        return Wt::cpp14::make_unique<MainPage>(env, server);//return new MainPage(env, this);
+    };*/
+    //m_server->addEntryPoint(Wt::EntryPointType::Application,wtApplicationFactory);
+    // m_server->addEntryPoint(Wt::EntryPointType::Application,
+    //                      std::bind(createApplication, std::placeholders::_1,nullptr));
+                               //      std::ref(MainPage)));
+ /*   Wt::ApplicationCreator callback = [&](const Wt::WEnvironment &env) {
+        //auto session = Wt::cpp14::make_unique<Session>(dbPath);
+        MainPage j(env, this);
+        //return Wt::cpp14::make_unique<MainPage>(j);//Wt::cpp14::make_unique<OAuthAuthorizationEndpoint>(env, std::move(session));
+    };*/
+    m_server->addEntryPoint(Wt::EntryPointType::Application,createApplication);
+    //m_server->addEntryPoint(Wt::EntryPointType::Application,(dynamic_cast<Wt::WApplication*>(factory));
     try
     {
         m_server->start();
@@ -494,7 +510,10 @@ void MainWindow::StopWtServer()
     m_server = decltype(m_server)();
 
     // [NOTE] very important
-    m_WebView->settings()->clearMemoryCaches();
+    //m_WebView->settings()->clearMemoryCaches();
+    m_WebView->page()->profile()->clearHttpCache();
+    m_WebView->page()->profile()->setHttpCacheType(QWebEngineProfile::HttpCacheType::NoCache);
+
 }
 
 void MainWindow::LoadFileConfig(QByteArray config) 
@@ -589,7 +608,7 @@ void MainWindow::on_actionSave_triggered() // TODO : QProgressDialog on SAVE ope
 	// increase progress in dialog
 	mp_ProcessDialog->setValue(1);
 	// set window title
-	setWindowTitle("WtDesigner - " + m_strProjName);
+    setWindowTitle("WtComposer - " + m_strProjName);
 	// enable CMake functionality = project is defined
 	ui.actionExport_to_CMake->setEnabled(true);
 	// save config file
@@ -623,6 +642,7 @@ void MainWindow::on_actionSave_triggered() // TODO : QProgressDialog on SAVE ope
 void MainWindow::on_actionSave_as_triggered()
 {
 	// Show save/as project dialog
+
 	m_dialogProjSave.show();
 }
 
@@ -890,7 +910,7 @@ void MainWindow::LoadProjectPath(QString strProjPathToLoad)
 		m_strProjRootPath = "";
 		m_strProjName     = "Untitled";
 		// set window title
-		setWindowTitle("WtDesigner - " + m_strProjName + " *");
+        setWindowTitle("WtComposer - " + m_strProjName + " *");
 	}
 	else
 	{
@@ -901,7 +921,7 @@ void MainWindow::LoadProjectPath(QString strProjPathToLoad)
 			m_strProjName = m_strProjRootPath.split("/").at(m_strProjRootPath.split("/").size() - 2);
 		}
 		// set window title
-		setWindowTitle("WtDesigner - " + m_strProjName);
+        setWindowTitle("WtComposer - " + m_strProjName);
 		// enable CMake functionality = project is defined
 		ui.actionExport_to_CMake->setEnabled(true);
 	}
@@ -1286,7 +1306,7 @@ void MainWindow::on_ReceivedAutoGenCpp(QByteArray config)
 		//
 		QTemporaryFile file;
 		file.setAutoRemove(false);
-		file.setFileTemplate(g_strLocalTempPath + "wtdesigner_html_preview_XXXXXX.txt");
+        file.setFileTemplate(g_strLocalTempPath + "wtcomposer_html_preview_XXXXXX.txt");
 		//
 		if (!file.open())
 		{
@@ -1818,14 +1838,14 @@ void MainWindow::on_cleanChanged(bool clean)
 	if (clean)
 	{
 		// set window title
-		setWindowTitle("WtDesigner - " + m_strProjName);
+        setWindowTitle("WtComposer - " + m_strProjName);
 	} 
 	else
 	{
 		if (!windowTitle().contains(" *"))
 		{
 			// set window title
-			setWindowTitle("WtDesigner - " + m_strProjName + " *");
+            setWindowTitle("WtComposer - " + m_strProjName + " *");
 		}
 	}
 }
@@ -2121,13 +2141,16 @@ void MainWindow::on_actionHtml_Code_triggered()
 	// Autogen Html and show in temp file
 	QTemporaryFile tmpFile;
 	tmpFile.setAutoRemove(false);
-	tmpFile.setFileTemplate(g_strLocalTempPath + "wtdesigner_html_preview_XXXXXX.txt"); // [NOTE] : .txt so does not open in browser
+    tmpFile.setFileTemplate(g_strLocalTempPath + "wtcomposer_html_preview_XXXXXX.txt"); // [NOTE] : .txt so does not open in browser
 	if (!tmpFile.open())
 	{
 		qDebug() << "[ERROR] Could not open HTML preview in MainWindow::on_actionC_Code_triggered";
 		return;
 	}
-	QString strHtml = m_WebView->page()->mainFrame()->toHtml();
+    QTextEdit *textEdit = new QTextEdit;
+    // *textEdit must remain valid until the lambda function is called.
+    m_WebView->page()->toHtml([textEdit](const QString &result){ textEdit->setPlainText(result); });
+    QString strHtml = textEdit->toPlainText();
 	tmpFile.write(strHtml.toUtf8());
 	tmpFile.flush();
 	tmpFile.close();

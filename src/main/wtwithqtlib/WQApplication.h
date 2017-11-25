@@ -1,3 +1,4 @@
+
 // This may look like C code, but it's really -*- C++ -*-
 /*
  * Copyright (C) 2008 Emweb bvba, Kessel-Lo, Belgium.
@@ -10,10 +11,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,16 +27,16 @@
 #ifndef WQAPPLICATION_H_
 #define WQAPPLICATION_H_
 
-#include <Wt/WApplication>
-#include <boost/thread.hpp>
+#include <Wt/WApplication.h>
+#include <thread>
+
+#include "DispatchThread.h"
 
 /*! \file WQApplication */
 
 class QString;
 
 namespace Wt {
-
-class DispatchThread;
 
 /*! \class WQApplication WQApplication WQApplication
  *  \brief An application class that provides interopability between
@@ -134,10 +135,10 @@ protected:
   virtual void waitForEvent();
 
 private:
-  bool            withEventLoop_;
-  DispatchThread *thread_;
-  bool            finalized_;
-  bool            recursiveEvent_;
+  bool withEventLoop_;
+  std::unique_ptr<DispatchThread> thread_;
+  bool finalized_;
+  bool recursiveEvent_;
 
   friend class DispatchThread;
 };
