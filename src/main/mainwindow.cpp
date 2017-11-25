@@ -456,24 +456,11 @@ void MainWindow::StartWtServer()
     m_server = std::unique_ptr < Wt::WServer
             > (new Wt::WServer(argv.size(), argv.data()));
 
-    //auto wtApplicationFactory = [&](const Wt::WEnvironment& env)
-    /*std::unique_ptr<Wt::WApplication> factory = [&](const Wt::WEnvironment &env,Wt::WServer &server) //auto wtApplicationFactory = [&](const Wt::WEnvironment& env)
-    {
-        return Wt::cpp14::make_unique<MainPage>(env, server);//return new MainPage(env, this);
-    };*/
-    //m_server->addEntryPoint(Wt::EntryPointType::Application,wtApplicationFactory);
-    // m_server->addEntryPoint(Wt::EntryPointType::Application,
-    //                      std::bind(createApplication, std::placeholders::_1,nullptr));
-                               //      std::ref(MainPage)));
- /*   Wt::ApplicationCreator callback = [&](const Wt::WEnvironment &env) {
-        //auto session = Wt::cpp14::make_unique<Session>(dbPath);
-        MainPage j(env, this);
-        //return Wt::cpp14::make_unique<MainPage>(j);//Wt::cpp14::make_unique<OAuthAuthorizationEndpoint>(env, std::move(session));
-    };*/
+
     m_server->addEntryPoint(Wt::EntryPointType::Application,std::bind(&createApplication,std::placeholders::_1,this));
     //TODO Make sure this is right!!!
-    //m_server->addEntryPoint(Wt::EntryPointType::Application,(dynamic_cast<Wt::WApplication*>(factory));
     try
+
     {
         m_server->start();
     } catch (const Wt::WServer::Exception &e)
@@ -2140,22 +2127,21 @@ void MainWindow::on_actionC_Code_triggered()
 void MainWindow::on_actionHtml_Code_triggered()
 {
 	// Autogen Html and show in temp file
-	QTemporaryFile tmpFile;
-	tmpFile.setAutoRemove(false);
-    tmpFile.setFileTemplate(g_strLocalTempPath + "wtcomposer_html_preview_XXXXXX.txt"); // [NOTE] : .txt so does not open in browser
-	if (!tmpFile.open())
+    QTemporaryFile * tmpFile;
+    tmpFile->setAutoRemove(false);
+    tmpFile->setFileTemplate(g_strLocalTempPath + "wtcomposer_html_preview_XXXXXX.txt"); // [NOTE] : .txt so does not open in browser
+    if (!tmpFile->open())
 	{
 		qDebug() << "[ERROR] Could not open HTML preview in MainWindow::on_actionC_Code_triggered";
 		return;
-	}
-    QTextEdit *textEdit = new QTextEdit;
-    // *textEdit must remain valid until the lambda function is called.
-    m_WebView->page()->toHtml([textEdit](const QString &result){ textEdit->setPlainText(result); });
-    QString strHtml = textEdit->toPlainText();
-	tmpFile.write(strHtml.toUtf8());
-	tmpFile.flush();
-	tmpFile.close();
-	QDesktopServices::openUrl(QUrl("file:///" + tmpFile.fileName(), QUrl::TolerantMode));
+    }
+    // *tmpFile must remain valid until the lambda function is called.
+    m_WebView->page()->toHtml([tmpFile](const QString &result){
+        tmpFile->write(result.toUtf8());
+        tmpFile->flush();
+        tmpFile->close();
+        QDesktopServices::openUrl(QUrl("file:///" + tmpFile->fileName(), QUrl::TolerantMode));
+    });
 }
 
 void MainWindow::on_actionAbout_triggered()

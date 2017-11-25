@@ -21,11 +21,13 @@ const QString g_strHighlightClassName = "wtc_highlight";
 
 MyWebView::MyWebView(QWidget *parent) : QWebEngineView(parent)
 {
+    QApplication::instance()->installEventFilter(this);
+    setMouseTracking(true);
 	m_strCurrentElemId = "";
 	installEventFilter(this);
 	setAcceptDrops(true);
-	QObject::connect( this, SIGNAL(loadStarted())     , this, SLOT(on_loadStarted())      );
-	QObject::connect( this, SIGNAL(loadFinished(bool)), this, SLOT(on_loadFinished(bool)) );
+    QObject::connect( this, SIGNAL(loadStarted())     , this, SLOT(on_loadStarted()));
+    QObject::connect( this, SIGNAL(loadFinished(bool)), this, SLOT(on_loadFinished(bool)) );
 	// set qt style to webview
 	setStyleSheet("background-color: lightgray;");
 	// set css style for highlighting element
@@ -33,17 +35,24 @@ MyWebView::MyWebView(QWidget *parent) : QWebEngineView(parent)
 						   "border-width  : 2px      !important; "
 						   "border-color  : #f0f090  !important; ";
 	SetHighlightStyleClass(g_strHighlightClassName, strStyle);
+
+    //this->mouseMoveEvent(new );
+    //QString code = "document.addEventListener('mousemove', function(e) {\
+     //       console.log(document.elementFromPoint(e.pageX, e.pageY)); \
+      //  })";
 }
 
 bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 {
 	if (!m_boolEnableEvtProcess) { return false; }
 
-	if (event->type() == QEvent::MouseMove)
-	{
-		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+    if (watched->parent() == this && event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         QWebEngineView *view          = dynamic_cast<QWebEngineView*>(watched);
 		QPoint pos              = view->mapFromGlobal(mouseEvent->globalPos());
+        // Will incorperate QWebChannel
+        /*
         auto *frame        = view->page()->frameAt(mouseEvent->pos());
 		if (frame!=NULL)
 		{
@@ -68,13 +77,14 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 					strlistClasses.removeAll(g_strHighlightClassName);
 					Q_EMIT mouseMovedOverElem(m_strCurrentElemId, strlistClasses.join(' '));
 				}
-			}
-		}
+            }
+        }*/
 	}
 	else if (event->type() == QEvent::MouseButtonPress)
 	{
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-		if (mouseEvent->button() == Qt::LeftButton)
+         std::cout << "QEvent::MouseButtonPress" << std::endl;
+    /*	if (mouseEvent->button() == Qt::LeftButton)
 		{
             QWebEngineView *view = dynamic_cast<QWebView*>(watched);
 			QPoint pos = view->mapFromGlobal(mouseEvent->globalPos());
@@ -95,7 +105,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 					Q_EMIT mouseLeftClickedOverElem(m_strCurrentElemId);
 				}
 			}
-		}
+        }*/
 	}
 	return false;
 }
@@ -103,7 +113,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 QString MyWebView::GetCloserContainerId()
 {
 	QWebElement elemCurrent = FindCloserContainer(m_old_click_element);
-	return elemCurrent.attribute("id");
+    return "id";//elemCurrent.attribute("id");
 }
 
 void MyWebView::ChangeHoveredElemColor(QWebElement &hitTestResult)
@@ -112,11 +122,11 @@ void MyWebView::ChangeHoveredElemColor(QWebElement &hitTestResult)
 	// approach of creating class in user css for qwebview, and then toggle the class
 
 	// Restore old element
-	m_old_hover_element.removeClass(g_strHighlightClassName);
+//	m_old_hover_element.removeClass(g_strHighlightClassName);
 	// Store new as old
 	m_old_hover_element = hitTestResult;
 	// Highlight
-	m_old_hover_element.addClass(g_strHighlightClassName);
+//	m_old_hover_element.addClass(g_strHighlightClassName);
 }
 
 void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
@@ -124,7 +134,7 @@ void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
 	if (!m_boolEnableEvtProcess) { return; }
 
 	// Restore old element
-	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
+/*	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
 	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
 	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
 	// Store new as old
@@ -136,27 +146,27 @@ void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
 	// Highlight
 	m_old_click_element.setStyleProperty("border-style", "solid"  );
 	m_old_click_element.setStyleProperty("border-width", "3px"    );
-	m_old_click_element.setStyleProperty("border-color", "#FF0000"); // red
+    m_old_click_element.setStyleProperty("border-color", "#FF0000"); // red*/
 
 }
 
 void MyWebView::on_HighlightTreeSelectedElem(QString name)
 {
 	if (!m_boolEnableEvtProcess) { return; }
-    QWebElement welemTemp = page()->mainFrame()->documentElement();
-    QWebElement webelem = FindElementByName(welemTemp, name);
+   // QWebElement welemTemp = page()->mainFrame()->documentElement();
+   // QWebElement webelem = FindElementByName(welemTemp, name);
 	
-	if (webelem.isNull())
+/*	if (webelem.isNull())
 	{
 		qDebug() << "[ERROR] Invalid QWebElement in MyWebView::on_HighlightTreeSelectedElem.";
 		return;
-	}
-	ChangeClickedElemColor(webelem);
+    }*/
+//	ChangeClickedElemColor(webelem);
 }
 
 QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
 {
-	if (elem.attribute("id").compare(name, Qt::CaseInsensitive) == 0)
+/*	if (elem.attribute("id").compare(name, Qt::CaseInsensitive) == 0)
 	{
 		return elem;
 	}
@@ -173,7 +183,7 @@ QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
 			}
 			childelem = childelem.nextSibling();
 		}
-	}
+    }*/
 	return QWebElement();
 }
 
@@ -231,20 +241,20 @@ void MyWebView::leaveEvent(QEvent * event)
 	if (!m_boolEnableEvtProcess) { return; }
 
 	// Restore old element
-	m_old_hover_element.removeClass(g_strHighlightClassName);
+    //m_old_hover_element.removeClass(g_strHighlightClassName);
 }
 
 void MyWebView::on_loadStarted()
 {
 	m_boolEnableEvtProcess = false;
 
-	m_old_hover_element.removeClass(g_strHighlightClassName);
+    //m_old_hover_element.removeClass(g_strHighlightClassName);
 
 	m_strCurrentElemId = "";
 
-	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
-	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
-	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
+//	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
+//	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
+//	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
 
 	m_old_click_element = QWebElement();
 	m_old_click_borderstyle = "";
@@ -273,8 +283,8 @@ void MyWebView::SetHighlightStyleClass(QString strClassName, QString &strTmpStyl
 {
 	QByteArray  strComposedStyle("." + strClassName.toUtf8() + " { " + strTmpStyle.toUtf8()  + " }");
 
-	QWebSettings *settings = QWebSettings::globalSettings();
-	settings->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()));
+//	QWebSettings *settings = QWebSettings::globalSettings();
+//	settings->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()));
 
 }
 
@@ -282,8 +292,8 @@ QWebElement MyWebView::FindCloserContainer(QWebElement &elem)
 {
 	// find by elem id
 	bool       bIsContainer = false;
-    QString strTemp = elem.attribute("id");
-    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName (strTemp);
+ //   QString strTemp = elem.attribute("id");
+    /*WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName (strTemp);
 	// check if valid parent
 	if (welem)
 	{
@@ -305,8 +315,8 @@ QWebElement MyWebView::FindCloserContainer(QWebElement &elem)
 		return elem;
 	}
 	else
-	{
-		if (!elem.parent().isNull())
+    {*/
+    /*	if (!elem.parent().isNull())
 		{
             QWebElement welemTemp = elem.parent();
             return FindCloserContainer(welemTemp);
@@ -314,24 +324,26 @@ QWebElement MyWebView::FindCloserContainer(QWebElement &elem)
 		else
 		{
 			return QWebElement();
-		}
-	}
+        }*/
+        return QWebElement();//Remove this
+    //}
 }
 
 QWebElement MyWebView::FindCloserWidget(QWebElement &elem)
 {
-    QString strTemp = elem.attribute("id");
-    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(strTemp);
+  //  QString strTemp = elem.attribute("id");
+//    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(strTemp);
 	// check if valid parent
-	if (welem)
-	{
+    //if (welem)
+/*	{
 		return elem;
 	}
 	else
 	{
         QWebElement welemTemp = elem.parent();
         return FindCloserWidget(welemTemp);
-	}
+    }*/
+        return QWebElement();//Remove this
 }
 
 

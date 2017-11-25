@@ -22,7 +22,7 @@
 #include <QString>
 #include <QSettings>
 #include <QFileDialog>
-#include "../../mainwindow.h"
+//#include "../../mainwindow.h"
 
 namespace Ui {
 class DialogConfig;
@@ -94,7 +94,6 @@ private Q_SLOTS:
 private:
     Ui::DialogConfig *ui;
 
-    MainWindow* getMainWindow();
     QStringList extraThemes;
 
 	QString str_docroot       ;

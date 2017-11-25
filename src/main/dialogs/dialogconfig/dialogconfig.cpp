@@ -36,10 +36,10 @@ ui(new Ui::DialogConfig)
     QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
     QString sText = settings.value("Theme", "Light").toString();
     extraThemes = settings.value("ExtraWtComposerThemes").value<QStringList>();
-    foreach (const QString theme, extraThemes){
+    Q_FOREACH (const QString theme, extraThemes){
         ui->ComposerTheme->addItem(theme);
     }
-    ui->comboBox->setCurrentIndex(ui->comboBox->findText(sText));
+    ui->ComposerTheme->setCurrentIndex(ui->ComposerTheme->findText(sText));
 	m_p_str_docroot = NULL;
 	m_p_str_http_address = NULL;
 	m_p_str_http_port = NULL;
@@ -408,19 +408,12 @@ void DialogConfig::on_line_wtitle_textEdited(const QString &arg1)
 {
 	str_wt_title = arg1;
 }
-MainWindow* DialogConfig::getMainWindow()
-{
-    foreach (QWidget *w, qApp->topLevelWidgets())
-        if (MainWindow* mainWin = qobject_cast<MainWindow*>(w))
-            return mainWin;
-    return nullptr;
-}
 void DialogConfig::on_comboBox_currentTextChanged(const QString &arg1)
 {
     auto m_sSettingsFile = QApplication::applicationDirPath().left(1) + ":/settings.ini";
     QSettings settings(m_sSettingsFile, QSettings::NativeFormat);
     settings.setValue("Theme", QVariant::fromValue(arg1));
-    foreach (const QString theme, extraThemes){
+    Q_FOREACH (const QString theme, extraThemes){
         if (arg1 == "Dark"){
             QFile f(":qdarkstyle/style.qss");
             if (!f.exists())
@@ -438,7 +431,7 @@ void DialogConfig::on_comboBox_currentTextChanged(const QString &arg1)
             qApp->setStyleSheet("");
         }
         else if (arg1 == theme){
-               QString temp = QApplication::applicationDirPath().left(1) + ":"+sText+"/.qss";
+               QString temp = QApplication::applicationDirPath().left(1) + ":"+arg1+"/.qss";
                QFile f(temp);
                if (!f.exists())
                {
