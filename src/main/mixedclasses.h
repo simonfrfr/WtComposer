@@ -248,7 +248,7 @@ public:
 // WARNING : Inheritance order is important, mixed class should inherit from QObject first, for Qt metadata to work
 //           In order to keep same Wt code to work in the original order, the constructor should have the Wt parameter first because then qobject param can be undefined (= 0)
 
-class WtQtContainerWidget : public WtQtInteractWidget, public Wt::WContainerWidget
+class WtQtContainerWidget : public WtQtInteractWidget, public  Wt::WContainerWidget
 {
 	Q_OBJECT
 	// PREVIOUSLY Inherited Wt::WWebWidget

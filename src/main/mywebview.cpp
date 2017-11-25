@@ -19,7 +19,7 @@
 
 const QString g_strHighlightClassName = "wtc_highlight";
 
-MyWebView::MyWebView(QWidget *parent) : QWebView(parent)
+MyWebView::MyWebView(QWidget *parent) : QWebEngineView(parent)
 {
 	m_strCurrentElemId = "";
 	installEventFilter(this);
@@ -44,7 +44,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         QWebEngineView *view          = dynamic_cast<QWebEngineView*>(watched);
 		QPoint pos              = view->mapFromGlobal(mouseEvent->globalPos());
-        QWebFrame *frame        = view->page()->frameAt(mouseEvent->pos());
+        auto *frame        = view->page()->frameAt(mouseEvent->pos());
 		if (frame!=NULL)
 		{
 			QWebHitTestResult hitTestResult = frame->hitTestContent(pos);

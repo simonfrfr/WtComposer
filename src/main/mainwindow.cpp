@@ -423,9 +423,9 @@ void MainWindow::LoadDefaultConfig()
 	StartWtServer();
 }
 
-std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env)
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env, MainWindow* ap)
 {
-  return Wt::cpp14::make_unique<MainPage>(env); //Fix this....
+  return Wt::cpp14::make_unique<MainPage>(env,ap); //Fix this....
 }
 
 void MainWindow::StartWtServer()
@@ -470,7 +470,8 @@ void MainWindow::StartWtServer()
         MainPage j(env, this);
         //return Wt::cpp14::make_unique<MainPage>(j);//Wt::cpp14::make_unique<OAuthAuthorizationEndpoint>(env, std::move(session));
     };*/
-    m_server->addEntryPoint(Wt::EntryPointType::Application,createApplication);
+    m_server->addEntryPoint(Wt::EntryPointType::Application,std::bind(&createApplication,std::placeholders::_1,this));
+    //TODO Make sure this is right!!!
     //m_server->addEntryPoint(Wt::EntryPointType::Application,(dynamic_cast<Wt::WApplication*>(factory));
     try
     {

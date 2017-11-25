@@ -138,9 +138,12 @@ WtQtWidget::Wt_Slots_ WtQtWidget::GetSlotEnumByName(QString name)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtContainerWidget::WtQtContainerWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WContainerWidget(wparent), WtQtInteractWidget(qparent)
+WtQtContainerWidget::WtQtContainerWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WContainerWidget(), WtQtInteractWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        //std::unique_ptr<Wt::WContainerWidget> j(new Wt::WContainerWidget());
+        wparent->addChild(std::unique_ptr<Wt::WContainerWidget>{std::move(this)});
+    }
 }
 
 WtQtContainerWidget::WtQtContainerWidget(const WtQtContainerWidget& other)
@@ -206,9 +209,11 @@ void WtQtContainerWidget::Wt_setHtmlTagName(QString tagname)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtAnchor::WtQtAnchor(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WAnchor(wparent), WtQtContainerWidget(wparent, qparent)
+WtQtAnchor::WtQtAnchor(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WAnchor(), WtQtContainerWidget(wparent, qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WAnchor>{std::move(this)});
+    }
 }
 
 WtQtAnchor::WtQtAnchor(const WtQtAnchor& other)
@@ -278,16 +283,18 @@ void WtQtAnchor::Wt_setLink(QString link)
 
 QString WtQtAnchor::Wt_target()
 {
-	if (target() == Wt::TargetNewWindow) { return "TargetNewWindow"; }
-	else if (target() == Wt::TargetThisWindow) { return "TargetThisWindow"; }
-	else                                       { return "TargetSelf"; }
+    if (link().target() == Wt::LinkTarget::NewWindow) { return "LinkTarget::NewWindow"; }
+    else if (link().target() == Wt::LinkTarget::ThisWindow) { return "LinkTarget::ThisWindow"; }
+    else                                       { return "LinkTarget::Self"; }
 }
 
 void WtQtAnchor::Wt_setTarget(QString target)
 {
-	if (target.compare("TargetNewWindow", Qt::CaseInsensitive) == 0) { setTarget(Wt::TargetNewWindow); }
-	else if (target.compare("TargetThisWindow", Qt::CaseInsensitive) == 0) { setTarget(Wt::TargetThisWindow); }
-	else  /*(target.compare("TargetSelf", Qt::CaseInsensitive) == 0)*/     { setTarget(Wt::TargetSelf); }
+    Wt::WLink temp = this->link();
+    if (target.compare("TargetNewWindow", Qt::CaseInsensitive) == 0) { temp.setTarget(Wt::LinkTarget::NewWindow); }
+    else if (target.compare("TargetThisWindow", Qt::CaseInsensitive) == 0) { temp.setTarget(Wt::LinkTarget::ThisWindow); }
+    else  /*(target.compare("TargetSelf", Qt::CaseInsensitive) == 0)*/     { temp.setTarget(Wt::LinkTarget::Self); }
+    this->setLink(temp);
 }
 
 QString WtQtAnchor::Wt_text()
@@ -342,9 +349,11 @@ void WtQtAnchor::Wt_setTextFormat(QString textFormat)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtText::WtQtText(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WText(wparent), WtQtInteractWidget(qparent)
+WtQtText::WtQtText(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WText(), WtQtInteractWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WText>{std::move(this)});
+    }
 }
 
 WtQtText::WtQtText(const WtQtText& other)
@@ -482,14 +491,17 @@ void WtQtText::Wt_setTextFormat(QString textFormat)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtLineEdit::WtQtLineEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WLineEdit(wparent), WtQtFormWidget(qparent)
+WtQtLineEdit::WtQtLineEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WLineEdit(), WtQtFormWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WLineEdit>{std::move(this)});
+    }
 	m_boolIsSearch = false;
 	// check if parent is navbar
 	WtQtNavigationBar * navbar = qobject_cast<WtQtNavigationBar*>(qparent);
 	if (navbar)
 	{
-		navbar->addSearch(this, Wt::AlignRight);
+        navbar->addSearch(std::unique_ptr<Wt::WLineEdit>{std::move(this)}, Wt::AlignmentFlag::Right);
 		m_boolIsSearch = true;
 	}
 }
@@ -551,12 +563,12 @@ void WtQtLineEdit::Wt_setInline(QString isinline)
 
 QString WtQtLineEdit::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtLineEdit::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 
@@ -568,9 +580,11 @@ void WtQtLineEdit::Wt_setEmptyText(QString emptytext)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtPushButton::WtQtPushButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WPushButton(wparent), WtQtFormWidget(qparent)
+WtQtPushButton::WtQtPushButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WPushButton(), WtQtFormWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WPushButton>{std::move(this)});
+    }
 }
 
 WtQtPushButton::WtQtPushButton(const WtQtPushButton& other)
@@ -636,12 +650,12 @@ void WtQtPushButton::Wt_setInline(QString isinline)
 
 QString WtQtPushButton::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtPushButton::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtPushButton::Wt_text()
@@ -674,8 +688,11 @@ void WtQtPushButton::Wt_setLink(QString link)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtImage::WtQtImage(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WImage(wparent), WtQtInteractWidget(qparent)
+WtQtImage::WtQtImage(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WImage(), WtQtInteractWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WImage>{std::move(this)});
+    }
 	strImageLink = "";
 }
 
@@ -752,9 +769,12 @@ void WtQtImage::Wt_setImageLink(QString imagelink)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTemplate::WtQtTemplate(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTemplate(wparent), WtQtInteractWidget(qparent)
+WtQtTemplate::WtQtTemplate(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTemplate(), WtQtInteractWidget(qparent)
 {
-	m_textFormat = Wt::XHTMLText;
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTemplate>{std::move(this)});
+    }
+    m_textFormat = Wt::TextFormat::XHTML;
 }
 
 WtQtTemplate::WtQtTemplate(const WtQtTemplate& other)
@@ -863,9 +883,11 @@ void WtQtTemplate::Wt_setTextFormat(QString textFormat)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtSplitButton::WtQtSplitButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSplitButton(wparent), WtQtCompositeWidget(qparent)
+WtQtSplitButton::WtQtSplitButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSplitButton(), WtQtCompositeWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WSplitButton>{std::move(this)});
+    }
 }
 
 WtQtSplitButton::WtQtSplitButton(const WtQtSplitButton& other)
@@ -962,7 +984,8 @@ void WtQtSplitButton::Wt_setAllItems(QString strAllItems)
 		popup->addItem(strListItems.at(i).toStdString());
 	}
 	//setMenu(popup);
-	dropDownButton()->setMenu(popup);
+    this->dropDownButton()->setMenu(std::unique_ptr<Wt::WPopupMenu>{std::move(popup)});
+    //dropDownButton()->setMenu(popup);
 }
 
 /*
@@ -971,8 +994,11 @@ void WtQtSplitButton::Wt_setAllItems(QString strAllItems)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtRadioButton::WtQtRadioButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WRadioButton("Some Text", wparent), WtQtAbstractToggleButton(qparent)
+WtQtRadioButton::WtQtRadioButton(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WRadioButton("Some Text"), WtQtAbstractToggleButton(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WRadioButton>{std::move(this)});
+    }
 	m_printed = false;
 	m_qtparent = dynamic_cast<WtQtWidget*>(qparent);
 	if (!m_qtparent)
@@ -1051,12 +1077,12 @@ void WtQtRadioButton::Wt_setInline(QString isinline)
 
 QString WtQtRadioButton::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtRadioButton::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 //QString WtQtRadioButton::Wt_htmlTagName()
@@ -1158,9 +1184,11 @@ void WtQtRadioButton::clearAllPrinted()
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtCheckBox::WtQtCheckBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WCheckBox("Some Text", wparent), WtQtAbstractToggleButton(qparent)
+WtQtCheckBox::WtQtCheckBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WCheckBox("Some Text"), WtQtAbstractToggleButton(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WCheckBox>{std::move(this)});
+    }
 }
 
 WtQtCheckBox::WtQtCheckBox(const WtQtCheckBox& other)
@@ -1220,12 +1248,12 @@ void WtQtCheckBox::Wt_setInline(QString isinline)
 
 QString WtQtCheckBox::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtCheckBox::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtCheckBox::Wt_text()
@@ -1244,9 +1272,11 @@ void WtQtCheckBox::Wt_setText(QString text)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtComboBox::WtQtComboBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WComboBox(wparent), WtQtFormWidget(qparent)
+WtQtComboBox::WtQtComboBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WComboBox(), WtQtFormWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WComboBox>{std::move(this)});
+    }
 }
 
 WtQtComboBox::WtQtComboBox(const WtQtComboBox& other)
@@ -1306,12 +1336,12 @@ void WtQtComboBox::Wt_setInline(QString isinline)
 
 QString WtQtComboBox::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtComboBox::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtComboBox::Wt_allItems()
@@ -1354,8 +1384,11 @@ void WtQtComboBox::Wt_setAllItems(QString strAllItems)
 */
 
 
-WtQtInPlaceEdit::WtQtInPlaceEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WInPlaceEdit("This is editable text", wparent), WtQtCompositeWidget(qparent)
+WtQtInPlaceEdit::WtQtInPlaceEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WInPlaceEdit("This is editable text"), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WInPlaceEdit>{std::move(this)});
+    }
 	m_boolButtonsEnabled = true;
 }
 
@@ -1440,9 +1473,11 @@ void WtQtInPlaceEdit::Wt_setButtonsEnabled(QString isinline)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTextArea::WtQtTextArea(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTextArea(wparent), WtQtFormWidget(qparent)
+WtQtTextArea::WtQtTextArea(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTextArea(), WtQtFormWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTextArea>{std::move(this)});
+    }
 }
 
 WtQtTextArea::WtQtTextArea(const WtQtTextArea& other)
@@ -1502,12 +1537,12 @@ void WtQtTextArea::Wt_setInline(QString isinline)
 
 QString WtQtTextArea::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WTextArea::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WTextArea::placeholderText().toUTF8());
 }
 
 void WtQtTextArea::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WTextArea::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WTextArea::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtTextArea::Wt_text()
@@ -1546,8 +1581,11 @@ void WtQtTextArea::Wt_setRows(QString rows)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtSelectionBox::WtQtSelectionBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSelectionBox(wparent), WtQtComboBox(wparent, qparent)
+WtQtSelectionBox::WtQtSelectionBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSelectionBox(), WtQtComboBox(wparent, qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WSelectionBox>{std::move(this)});
+    }
 	WtQtComboBox::setHidden(true);
 }
 
@@ -1608,12 +1646,12 @@ void WtQtSelectionBox::Wt_setInline(QString isinline)
 
 QString WtQtSelectionBox::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WSelectionBox::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WSelectionBox::placeholderText().toUTF8());
 }
 
 void WtQtSelectionBox::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WSelectionBox::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WSelectionBox::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtSelectionBox::Wt_allItems()
@@ -1655,8 +1693,11 @@ void WtQtSelectionBox::Wt_setAllItems(QString strAllItems)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtSpinBox::WtQtSpinBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSpinBox(wparent), WtQtLineEdit(wparent, qparent)
+WtQtSpinBox::WtQtSpinBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSpinBox(), WtQtLineEdit(wparent, qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WSpinBox>{std::move(this)});
+    }
 	WtQtLineEdit::setHidden(true);
 	// TODO : locale error
 	// TODO : set disabled?
@@ -1719,12 +1760,12 @@ void WtQtSpinBox::Wt_setInline(QString isinline)
 
 QString WtQtSpinBox::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WSpinBox::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WSpinBox::placeholderText().toUTF8());
 }
 
 void WtQtSpinBox::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WSpinBox::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WSpinBox::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtSpinBox::Wt_minimum()
@@ -1763,8 +1804,11 @@ void WtQtSpinBox::Wt_setValue(QString value)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtDoubleSpinBox::WtQtDoubleSpinBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WDoubleSpinBox(wparent), WtQtLineEdit(wparent, qparent)
+WtQtDoubleSpinBox::WtQtDoubleSpinBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WDoubleSpinBox(), WtQtLineEdit(wparent, qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WDoubleSpinBox>{std::move(this)});
+    }
 	WtQtLineEdit::setHidden(true);
 	// TODO : locale error
 	// TODO : set disabled?
@@ -1827,12 +1871,12 @@ void WtQtDoubleSpinBox::Wt_setInline(QString isinline)
 
 QString WtQtDoubleSpinBox::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WDoubleSpinBox::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WDoubleSpinBox::placeholderText().toUTF8());
 }
 
 void WtQtDoubleSpinBox::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WDoubleSpinBox::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WDoubleSpinBox::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtDoubleSpinBox::Wt_minimum()
@@ -1891,8 +1935,11 @@ void WtQtDoubleSpinBox::Wt_setDecimals(QString decimals)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTimeEdit::WtQtTimeEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTimeEdit(wparent), WtQtLineEdit(wparent, qparent)
+WtQtTimeEdit::WtQtTimeEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTimeEdit(), WtQtLineEdit(wparent, qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTimeEdit>{std::move(this)});
+    }
 	WtQtLineEdit::setHidden(true);
 	setTime(Wt::WTime::currentServerTime());
 	// TODO : locale error
@@ -1956,12 +2003,12 @@ void WtQtTimeEdit::Wt_setInline(QString isinline)
 
 QString WtQtTimeEdit::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WTimeEdit::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WTimeEdit::placeholderText().toUTF8());
 }
 
 void WtQtTimeEdit::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WTimeEdit::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WTimeEdit::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtTimeEdit::Wt_minuteStep()
@@ -1990,8 +2037,11 @@ void WtQtTimeEdit::Wt_setFormat(QString format)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtDateEdit::WtQtDateEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WDateEdit(wparent), WtQtLineEdit(wparent, qparent)
+WtQtDateEdit::WtQtDateEdit(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WDateEdit(), WtQtLineEdit(wparent, qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WDateEdit>{std::move(this)});
+    }
 	WtQtLineEdit::setHidden(true);
 	setDate(Wt::WDate::currentServerDate());
 	// TODO : locale error
@@ -2055,12 +2105,12 @@ void WtQtDateEdit::Wt_setInline(QString isinline)
 
 QString WtQtDateEdit::Wt_emptyText()
 {
-	return QString::fromStdString(Wt::WDateEdit::emptyText().toUTF8());
+    return QString::fromStdString(Wt::WDateEdit::placeholderText().toUTF8());
 }
 
 void WtQtDateEdit::Wt_setEmptyText(QString emptytext)
 {
-	Wt::WDateEdit::setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    Wt::WDateEdit::setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtDateEdit::Wt_format()
@@ -2079,9 +2129,11 @@ void WtQtDateEdit::Wt_setFormat(QString format)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtCalendar::WtQtCalendar(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WCalendar(wparent), WtQtCompositeWidget(qparent)
+WtQtCalendar::WtQtCalendar(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WCalendar(), WtQtCompositeWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WCalendar>{std::move(this)});
+    }
 }
 
 WtQtCalendar::WtQtCalendar(const WtQtCalendar& other)
@@ -2135,9 +2187,11 @@ void WtQtCalendar::Wt_setInline(QString isinline)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtSlider::WtQtSlider(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSlider(wparent), WtQtFormWidget(qparent)
+WtQtSlider::WtQtSlider(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WSlider(), WtQtFormWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WSlider>{std::move(this)});
+    }
 }
 
 WtQtSlider::WtQtSlider(const WtQtSlider& other)
@@ -2197,12 +2251,12 @@ void WtQtSlider::Wt_setInline(QString isinline)
 
 QString WtQtSlider::Wt_emptyText()
 {
-	return QString::fromStdString(emptyText().toUTF8());
+    return QString::fromStdString(placeholderText().toUTF8());
 }
 
 void WtQtSlider::Wt_setEmptyText(QString emptytext)
 {
-	setEmptyText(Wt::WString::fromUTF8(emptytext.toStdString()));
+    setPlaceholderText(Wt::WString::fromUTF8(emptytext.toStdString()));
 }
 
 QString WtQtSlider::Wt_minimum()
@@ -2251,9 +2305,11 @@ void WtQtSlider::Wt_setTickInterval(QString interval)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtFileUpload::WtQtFileUpload(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WFileUpload(wparent), WtQtWebWidget(qparent)
+WtQtFileUpload::WtQtFileUpload(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WFileUpload(), WtQtWebWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WFileUpload>{std::move(this)});
+    }
 }
 
 WtQtFileUpload::WtQtFileUpload(const WtQtFileUpload& other)
@@ -2317,9 +2373,11 @@ void WtQtFileUpload::Wt_setInline(QString isinline)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtProgressBar::WtQtProgressBar(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WProgressBar(wparent), WtQtInteractWidget(qparent)
+WtQtProgressBar::WtQtProgressBar(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WProgressBar(), WtQtInteractWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WProgressBar>{std::move(this)});
+    }
 }
 
 WtQtProgressBar::WtQtProgressBar(const WtQtProgressBar& other)
@@ -2413,9 +2471,11 @@ void WtQtProgressBar::Wt_setValue(QString value)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtGroupBox::WtQtGroupBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WGroupBox(wparent), WtQtContainerWidget(wparent, qparent)
+WtQtGroupBox::WtQtGroupBox(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WGroupBox(), WtQtContainerWidget(wparent, qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WGroupBox>{std::move(this)});
+    }
 }
 
 WtQtGroupBox::WtQtGroupBox(const WtQtGroupBox& other)
@@ -2489,8 +2549,11 @@ void WtQtGroupBox::Wt_setTitle(QString text)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtPanel::WtQtPanel(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WPanel(wparent), WtQtCompositeWidget(qparent)
+WtQtPanel::WtQtPanel(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WPanel(), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WPanel>{std::move(this)});
+    }
 	if (wparent == NULL)
 	{
 		wparent = GetWContainerParent(qparent);
@@ -2499,8 +2562,9 @@ WtQtPanel::WtQtPanel(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*=
 	{
 		qDebug() << "[ERROR] Invalid Wt parent in WtQtPanel::WtQtPanel";
 	}
-	m_centralWidget = new Wt::WContainerWidget(wparent); // TODO : will this work with null wparent?
-	setCentralWidget(m_centralWidget);
+    m_centralWidget = new Wt::WContainerWidget(); // TODO : will this work with null wparent?
+
+    setCentralWidget(std::unique_ptr<Wt::WContainerWidget>{std::move(m_centralWidget)});
 }
 
 WtQtPanel::WtQtPanel(const WtQtPanel& other)
@@ -2585,9 +2649,11 @@ QString WtQtPanel::getCentralWidgetId()
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtStackedWidget::WtQtStackedWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WStackedWidget(wparent), WtQtContainerWidget(wparent, qparent)
+WtQtStackedWidget::WtQtStackedWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WStackedWidget(), WtQtContainerWidget(wparent, qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WStackedWidget>{std::move(this)});
+    }
 }
 
 WtQtStackedWidget::WtQtStackedWidget(const WtQtStackedWidget& other)
@@ -2665,8 +2731,11 @@ void WtQtStackedWidget::Wt_setCurrentIndex(QString index)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTabWidget::WtQtTabWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTabWidget(wparent), WtQtCompositeWidget(qparent)
+WtQtTabWidget::WtQtTabWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTabWidget(), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTabWidget>{std::move(this)});
+    }
 	m_beingDeleted = false;
 	m_wparent = NULL;
 	if (wparent)
@@ -2747,9 +2816,10 @@ bool WtQtTabWidget::isBeingDeleted()
 
 WtQtTabItem::WtQtTabItem(WtQtTabWidget *qparent) : WtQtContainerWidget(qparent->getWtParent(), qparent)
 {
+
 	m_qparent     = qparent;
 	m_childWidget = dynamic_cast<Wt::WContainerWidget*>(this);
-	m_qparent->addTab(m_childWidget, Wt::WString("Label"));
+    m_qparent->addTab(std::unique_ptr<Wt::WContainerWidget>{std::move(m_childWidget)}, Wt::WString("Label"));
 }
 
 WtQtTabItem::WtQtTabItem(const WtQtTabItem& other)
@@ -2858,8 +2928,11 @@ void WtQtTabItem::Wt_setTabCloseable(QString bclosable)
 */
 
 // TODO : overload cpp_instantiate to acomodate wstackedwidget
-WtQtMenu::WtQtMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WMenu(new Wt::WStackedWidget(), wparent), WtQtCompositeWidget(qparent)
+WtQtMenu::WtQtMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WMenu(new Wt::WStackedWidget()), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WMenu>{std::move(this)});
+    }
 	m_isLeftWMenu  = false;
 	m_beingDeleted = false;
 	m_wparent = NULL;
@@ -2874,7 +2947,7 @@ WtQtMenu::WtQtMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0
 	if (m_wparent)
 	{
 		// add stacked widget to same menu parent
-		m_wparent->addWidget(Wt::WMenu::contentsStack());
+        m_wparent->addWidget(std::unique_ptr<Wt::WStackedWidget>{std::move(Wt::WMenu::contentsStack())});
 	}
 	else
 	{
@@ -2884,7 +2957,7 @@ WtQtMenu::WtQtMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0
 	WtQtNavigationBar * navbar = qobject_cast<WtQtNavigationBar*>(qparent);
 	if (navbar)
 	{
-		navbar->addMenu(this, Wt::AlignLeft);
+        navbar->addMenu(std::unique_ptr<Wt::WMenu>{std::move(this)}, Wt::AlignmentFlag::Left);
 		m_isLeftWMenu = true;
 	}
 }
@@ -2956,9 +3029,10 @@ bool WtQtMenu::isBeingDeleted()
 
 WtQtMenuItem::WtQtMenuItem(WtQtMenu *qparent) : WtQtContainerWidget(qparent->getWtParent(), qparent)
 {
+
 	m_qparent       = qparent;
 	m_contentwidget = dynamic_cast<Wt::WContainerWidget*>(this);
-	m_menuitem      = m_qparent->addItem(Wt::WString("Label"), m_contentwidget);
+    m_menuitem      = m_qparent->addItem(Wt::WString("Label"), std::unique_ptr<Wt::WContainerWidget>{std::move(m_contentwidget)});
 }
 
 WtQtMenuItem::WtQtMenuItem(const WtQtMenuItem& other)
@@ -3079,16 +3153,16 @@ WtQtPopupMenu::WtQtPopupMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qpa
 		{
 			m_pushbutton  = NULL;
 			WtQtPopupMenu * parentMenu = qobject_cast<WtQtPopupMenu*>(qparent);
-			m_submenuitem = parentMenu->getWPopupMenu()->addMenu("SubMenu", m_wmenu);
+            m_submenuitem = parentMenu->getWPopupMenu()->addMenu("SubMenu", std::unique_ptr<Wt::WMenu>{std::move(m_wmenu)});
 		} 
 		else if (navbar)
 		{
 			// Setup a Right-aligned menu.
-			m_rightMenu = new Wt::WMenu();
-			navbar->addMenu(m_rightMenu, Wt::AlignRight);
+            m_rightMenu = new Wt::WMenu();
+            navbar->addMenu(std::unique_ptr<Wt::WMenu>{std::move(m_rightMenu)}, Wt::AlignmentFlag::Right);
 			m_submenuitem = new Wt::WMenuItem("Help");
-			m_submenuitem->setMenu(m_wmenu);
-			m_rightMenu->addItem(m_submenuitem);
+            m_submenuitem->setMenu(std::unique_ptr<Wt::WMenu>{std::move(m_wmenu)});
+            m_rightMenu->addItem(std::unique_ptr<Wt::WMenuItem>{std::move(m_submenuitem)});
 			m_wmenu->setAutoHide(true);
 			//
 			m_wparent = navbar->getWtParent();
@@ -3097,8 +3171,11 @@ WtQtPopupMenu::WtQtPopupMenu(Wt::WContainerWidget *wparent /*= 0*/, QObject *qpa
 		else
 		{
 			m_submenuitem = NULL;
-			m_pushbutton  = new Wt::WPushButton(wparent);
-			m_pushbutton->setMenu(m_wmenu);
+            m_pushbutton  = new Wt::WPushButton();
+            if (wparent != NULL && wparent != nullptr){
+                wparent->addChild(std::unique_ptr<Wt::WPushButton>{std::move(m_pushbutton)});
+            }
+            m_pushbutton->setMenu(std::unique_ptr<Wt::WPopupMenu>{std::move(m_wmenu)});
 		}
 	}
 	else
@@ -3428,13 +3505,16 @@ void WtQtPopupItem::Wt_setCloseable(QString closable)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTable::WtQtTable(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTable(wparent), WtQtInteractWidget(qparent)
+WtQtTable::WtQtTable(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTable(), WtQtInteractWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTable>{std::move(this)});
+    }
 	// Just some entries for display
-	this->elementAt(0, 1)->addWidget(new Wt::WText("Column 1"));
-	this->elementAt(0, 2)->addWidget(new Wt::WText("Column 2"));
-	this->elementAt(1, 0)->addWidget(new Wt::WText("Row 1"));
-	this->elementAt(2, 0)->addWidget(new Wt::WText("Row 1"));
+    this->elementAt(0, 1)->addWidget(Wt::cpp14::make_unique<Wt::WText>("Column 1"));
+    this->elementAt(0, 2)->addWidget(Wt::cpp14::make_unique<Wt::WText>("Column 2"));
+    this->elementAt(1, 0)->addWidget(Wt::cpp14::make_unique<Wt::WText>("Row 1"));
+    this->elementAt(2, 0)->addWidget(Wt::cpp14::make_unique<Wt::WText>("Row 2"));
 }
 
 WtQtTable::WtQtTable(const WtQtTable& other)
@@ -3518,28 +3598,31 @@ void WtQtTable::Wt_setHeaderCountVertical(QString headcount)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTree::WtQtTree(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTree(wparent), WtQtCompositeWidget(qparent)
+WtQtTree::WtQtTree(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTree(), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTree>{std::move(this)});
+    }
 	Wt::WTreeNode *node = new Wt::WTreeNode("Furniture");
 
-	this->setTreeRoot(node);
-	node->label()->setTextFormat(Wt::PlainText);
-	node->setLoadPolicy(Wt::WTreeNode::NextLevelLoading);
-	node->addChildNode(new Wt::WTreeNode("Table"));
-	node->addChildNode(new Wt::WTreeNode("Cupboard"));
+    this->setTreeRoot(std::unique_ptr<Wt::WTreeNode>{std::move(node)});
+    node->label()->setTextFormat(Wt::TextFormat::Plain);
+    node->setLoadPolicy(Wt::ContentLoading::NextLevel);
+    node->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Table"));
+    node->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Cupboard"));
 
 	Wt::WTreeNode *three = new Wt::WTreeNode("Chair");
-	node->addChildNode(three);
-	node->addChildNode(new Wt::WTreeNode("Coach"));
+    node->addChildNode(std::unique_ptr<Wt::WTreeNode>{std::move(three)});
+    node->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Coach"));
 	node->expand();
 
-	three->addChildNode(new Wt::WTreeNode("Doc"));
-	three->addChildNode(new Wt::WTreeNode("Grumpy"));
-	three->addChildNode(new Wt::WTreeNode("Happy"));
-	three->addChildNode(new Wt::WTreeNode("Sneezy"));
-	three->addChildNode(new Wt::WTreeNode("Dopey"));
-	three->addChildNode(new Wt::WTreeNode("Bashful"));
-	three->addChildNode(new Wt::WTreeNode("Sleepy"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Doc"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Grumpy"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Happy"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Sneezy"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Dopey"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Bashful"));
+    three->addChildNode(Wt::cpp14::make_unique<Wt::WTreeNode>("Sleepy"));
 }
 
 WtQtTree::WtQtTree(const WtQtTree& other)
@@ -3593,29 +3676,34 @@ void WtQtTree::Wt_setInline(QString isinline)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-WtQtTreeTable::WtQtTreeTable(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTreeTable(wparent), WtQtCompositeWidget(qparent)
+WtQtTreeTable::WtQtTreeTable(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WTreeTable(), WtQtCompositeWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WTreeTable>{std::move(this)});
+    }
 	//resize(650, 200);
-	tree()->setSelectionMode(Wt::ExtendedSelection);
+    tree()->setSelectionMode(Wt::SelectionMode::Extended);
 	addColumn("Yuppie Factor", 125);
 	addColumn("# Holidays", 125);
 	addColumn("Favorite Item", 125);
 
 	Wt::WTreeTableNode *root = new Wt::WTreeTableNode("All Personnel");
-	setTreeRoot(root, "Emweb Organigram");
+    setTreeRoot(std::unique_ptr<Wt::WTreeTableNode>{std::move(root)}, "Emweb Organigram");
 
 	Wt::WTreeTableNode *group;
-
-	group = new Wt::WTreeTableNode("Upper Management", 0, root);
+    group = new Wt::WTreeTableNode("Upper Management", 0);
+    root->addChild(std::unique_ptr<Wt::WTreeTableNode>{std::move(group)});
 	addNode(group, "Chief Anything Officer", "-2.8", "20", "Scepter");
-	addNode(group, "Vice President of Parties", "13.57", "365", "Flag");
+    addNode(group, "Vice President of Parties", "13.57", "365", "Flag");
 	addNode(group, "Vice President of Staplery", "3.42", "27", "Perforator");
 
-	group = new Wt::WTreeTableNode("Middle management", 0, root);
+    group = new Wt::WTreeTableNode("Middle management", 0);
+    root->addChild(std::unique_ptr<Wt::WTreeTableNode>{std::move(group)});
 	addNode(group, "Boss of the house", "9.78", "35", "Happy Animals");
 	addNode(group, "Xena caretaker", "8.66", "10", "Yellow bag");
 
-	group = new Wt::WTreeTableNode("Actual Workforce", 0, root);
+    group = new Wt::WTreeTableNode("Actual Workforce", 0);
+    root->addChild(std::unique_ptr<Wt::WTreeTableNode>{std::move(group)});
 	addNode(group, "The Dork", "9.78", "22", "Mojito");
 	addNode(group, "The Stud", "8.66", "46", "Toothbrush");
 	addNode(group, "The Ugly", "13.0", "25", "Paper bag");
@@ -3670,10 +3758,11 @@ void WtQtTreeTable::Wt_setInline(QString isinline)
 
 Wt::WTreeTableNode * WtQtTreeTable::addNode(Wt::WTreeTableNode *parent, const char *name, const char *yuppie, const char *holidays, const char *favorite)
 {
-	Wt::WTreeTableNode *node = new Wt::WTreeTableNode(name, 0, parent);
-	node->setColumnWidget(1, new Wt::WText(yuppie));
-	node->setColumnWidget(2, new Wt::WText(holidays));
-	node->setColumnWidget(3, new Wt::WText(favorite));
+    Wt::WTreeTableNode *node = new Wt::WTreeTableNode(name, 0);
+    parent->addChild(std::unique_ptr<Wt::WTreeTableNode>{std::move(node)});
+    node->setColumnWidget(1, Wt::cpp14::make_unique<Wt::WText>(yuppie));
+    node->setColumnWidget(2, Wt::cpp14::make_unique<Wt::WText>(holidays));
+    node->setColumnWidget(3, Wt::cpp14::make_unique<Wt::WText>(favorite));
 	return node;
 }
 
@@ -3688,8 +3777,11 @@ Wt::WTreeTableNode * WtQtTreeTable::addNode(Wt::WTreeTableNode *parent, const ch
 
 
 WtQtNavigationBar::WtQtNavigationBar(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/)
-	: Wt::WNavigationBar(wparent), WtQtInteractWidget(qparent)
+    : Wt::WNavigationBar(), WtQtInteractWidget(qparent)
 {
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WNavigationBar>{std::move(this)});
+    }
 	m_wparent = NULL;
 	if (wparent)
 	{
@@ -3800,9 +3892,11 @@ QString WtQtNavigationBar::getParentWidgetId()
 
 
 
-WtQtPromotedWidget::WtQtPromotedWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WContainerWidget(wparent), WtQtWidget(qparent)
+WtQtPromotedWidget::WtQtPromotedWidget(Wt::WContainerWidget *wparent /*= 0*/, QObject *qparent /*= 0*/) : Wt::WContainerWidget(), WtQtWidget(qparent)
 {
-
+    if (wparent != NULL && wparent != nullptr){
+        wparent->addChild(std::unique_ptr<Wt::WContainerWidget>{std::move(this)});
+    }
 }
 
 WtQtPromotedWidget::WtQtPromotedWidget(const WtQtPromotedWidget& other)
@@ -3958,7 +4052,8 @@ QString WtQtAnchor::Cpp_link()
 
 QString WtQtAnchor::Cpp_target()
 {
-	return Wt_id() + "->" + "setTarget(Wt::" + Wt_target() + ");";
+    //TODO make sure is correct
+    return "Wt::WLink "+Wt_id()+"link = " + Wt_id() + "->link();\n" + Wt_id() +"link.setTarget(Wt::" + Wt_target() + ");\n"+Wt_id()+"->setLink("+Wt_id()+"link)";
 }
 
 QString WtQtAnchor::Cpp_text()
@@ -4035,7 +4130,7 @@ QString WtQtTemplate::Cpp_templateText()
 
 QString WtQtFormWidget::Cpp_emptyText()
 {
-	return Wt_id() + "->" + "setEmptyText(Wt::WString::fromUTF8(\"" + Wt_emptyText() + "\"));";
+    return Wt_id() + "->" + "setPlaceholderText(Wt::WString::fromUTF8(\"" + Wt_emptyText() + "\"));";
 }
 
 
