@@ -21,14 +21,14 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <property name="topMargin">
      <number>0</number>
     </property>
     <property name="bottomMargin">
      <number>2</number>
     </property>
-    <item row="0" column="0">
+    <item>
      <widget class="QFrame" name="frameResizer">
       <property name="minimumSize">
        <size>
@@ -270,7 +270,7 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item>
      <widget class="QScrollArea" name="scrollBrowser">
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -286,7 +286,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>433</width>
+         <width>451</width>
          <height>662</height>
         </rect>
        </property>
@@ -452,10 +452,59 @@
       <number>0</number>
      </property>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="EditMode">
+         <property name="text">
+          <string>Edit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="UiMode">
+         <property name="text">
+          <string>Ui</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QTabWidget" name="tabWtElements">
        <property name="currentIndex">
         <number>0</number>
        </property>
+       <widget class="QWidget" name="src">
+        <attribute name="title">
+         <string>Source</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTreeView" name="treeView"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabWtWidgets">
         <attribute name="title">
          <string>Wt Widgets</string>

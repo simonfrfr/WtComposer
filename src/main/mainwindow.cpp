@@ -822,7 +822,7 @@ void MainWindow::on_actionPaste_triggered()
 			if (strElemId.isEmpty()) { qDebug() << "[ERROR] Invalid element in clipboard paste"; return; }
 
 			// Find closer valid container
-            m_WebView->page()->runJavaScript("findCloserContainer(\""+m_WebView->oldClickElement()+"\")", [&](const QVariant &results){
+            m_WebView->page()->runJavaScript("findCloserContainer(\""+m_WebView->oldClickElement()+"\");", [&](const QVariant &results){
                 strParentElemId = results.toString();
                 qDebug() << strParentElemId;
                 strCurrentElemId    = m_treemodel.getElemByIndex(currentindex)->getElem().attribute(g_strIdAttr, "");
