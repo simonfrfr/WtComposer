@@ -822,25 +822,29 @@ void MainWindow::on_actionPaste_triggered()
 			if (strElemId.isEmpty()) { qDebug() << "[ERROR] Invalid element in clipboard paste"; return; }
 
 			// Find closer valid container
-			strParentElemId     = m_WebView->GetCloserContainerId();
-			strCurrentElemId    = m_treemodel.getElemByIndex(currentindex)->getElem().attribute(g_strIdAttr, "");
-			strCurrParentElemId = m_treemodel.getElemByIndex(currentindex)->getParent()->getElem().attribute(g_strIdAttr, "");
-			// Decide how to add
-			if (strParentElemId.compare(strCurrentElemId) == 0)
-			{ // append as child of current element
-				intRow = m_treemodel.getElemByIndex(currentindex)->countChild();
-			}
-			else if (strParentElemId.compare(strCurrParentElemId) == 0)
-			{ // append as a sibling 
-				intRow = m_treemodel.getElemByIndex(currentindex)->getRow() + 1;
-			}
-			else
-			{ // append as a child of the parent
-				intRow = m_treemodel.getElemByName(strParentElemId)->countChild();
-			}
-			// append element
-			appCommand = new MyUndoAppendElem(&m_treemodel, baconfigChunk, strParentElemId, intRow, this);
-			m_commandHistory.push(appCommand);
+            m_WebView->page()->runJavaScript("findCloserContainer(\""+m_WebView->oldClickElement()+"\")", [&](const QVariant &results){
+                strParentElemId = results.toString();
+                qDebug() << strParentElemId;
+                strCurrentElemId    = m_treemodel.getElemByIndex(currentindex)->getElem().attribute(g_strIdAttr, "");
+                strCurrParentElemId = m_treemodel.getElemByIndex(currentindex)->getParent()->getElem().attribute(g_strIdAttr, "");
+                // Decide how to add
+                if (strParentElemId.compare(strCurrentElemId) == 0)
+                { // append as child of current element
+                    intRow = m_treemodel.getElemByIndex(currentindex)->countChild();
+                }
+                else if (strParentElemId.compare(strCurrParentElemId) == 0)
+                { // append as a sibling
+                    intRow = m_treemodel.getElemByIndex(currentindex)->getRow() + 1;
+                }
+                else
+                { // append as a child of the parent
+                    intRow = m_treemodel.getElemByName(strParentElemId)->countChild();
+                }
+                // append element
+                appCommand = new MyUndoAppendElem(&m_treemodel, baconfigChunk, strParentElemId, intRow, this);
+                m_commandHistory.push(appCommand);
+            });
+
 		}
 		else 
 		{

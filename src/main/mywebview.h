@@ -40,13 +40,11 @@ public:
 	explicit MyWebView(QWidget * parent = 0);
 
 	bool        eventFilter(QObject * watched, QEvent * event);
- //   void		ChangeHoveredElemColor(QWebElement &hitTestResult);
-//	void        ChangeClickedElemColor(QWebElement &hitTestResult);
+    void		ChangeHoveredElemColor(Element hitTestResult);
+    void        ChangeClickedElemColor(Element hitTestResult);
 	void        SetHighlightStyleClass(QString strClassName, QString &strTmpStyle);
+    QString     oldClickElement();
 
-//	QWebElement FindCloserContainer(QWebElement &elem);
-//
-//	QWebElement FindElementByName(QWebElement &elem, QString &name);
 
 	QString     GetCloserContainerId();
 
@@ -71,7 +69,8 @@ public Q_SLOTS:
 
     // JS C++ Channel Links
     void onHover(int x, int y);
-    void FindCloserContainer(Element elem, QString returnFunctor);
+    bool bIsContainer(Element elem);
+ //   void FindCloserContainer(Element elem, QString returnFunctor);
     void FindCloserWidget(Element elem, QString returnFunctor);
 
 private:
@@ -79,14 +78,15 @@ private:
     void openChannel();
 
 	QString            m_strCurrentElemId;
-//	QWebElement        m_old_hover_element;
+    Element            m_old_hover_element;
     QWebChannel        m_web_channel;
 
 	// TODO : change to css class aproach
-//	QWebElement        m_old_click_element;
+    Element            m_old_click_element;
 	QString            m_old_click_borderstyle = "";
 	QString            m_old_click_borderwidth = "";
 	QString            m_old_click_bordercolor = "";
+    QString            m_old_click_border      = "";
 
 	bool               m_boolEnableEvtProcess  = false;
 	bool               m_boolIsDraggingWidget  = false;

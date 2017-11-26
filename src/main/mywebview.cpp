@@ -54,6 +54,7 @@ QString MyWebView::readFile (const QString& filename)
     }
     return "";
 }
+//Insteaad of Event Filter, Let JS handle this stuff
 bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 {
 	if (!m_boolEnableEvtProcess) { return false; }
@@ -123,83 +124,63 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
-QString MyWebView::GetCloserContainerId()
-{
-//	QWebElement elemCurrent = FindCloserContainer(m_old_click_element);
-    return "id";//elemCurrent.attribute("id");
+//Not Needed Anymore... Let JS Handle this...
+QString MyWebView::oldClickElement(){
+    return m_old_click_element;
 }
+/*QString MyWebView::GetCloserContainerId()
+{
+    Element elemCurrent = FindCloserContainer(m_old_click_element,"spitback");
 
-/*void MyWebView::ChangeHoveredElemColor(QWebElement &hitTestResult)
+    return "id";
+}
+*/
+void MyWebView::ChangeHoveredElemColor(Element hitTestResult)
 {
 	if (!m_boolEnableEvtProcess) { return; }
 	// approach of creating class in user css for qwebview, and then toggle the class
+    if (m_old_hover_element != "" && m_old_hover_element != "null")
+        // Restore old element
+        this->page()->runJavaScript("document.getElementById(\""+m_old_hover_element+"\").removeClass(\""+g_strHighlightClassName+"\");");
 
-	// Restore old element
-    m_old_hover_element.removeClass(g_strHighlightClassName);
 	// Store new as old
 	m_old_hover_element = hitTestResult;
 	// Highlight
-    m_old_hover_element.addClass(g_strHighlightClassName);
-}*/
+    this->page()->runJavaScript("document.getElementById(\""+m_old_hover_element+"\").addClass(\""+g_strHighlightClassName+"\");");
 
-/*void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
+}
+
+void MyWebView::ChangeClickedElemColor(Element hitTestResult)
 {
 	if (!m_boolEnableEvtProcess) { return; }
 
 	// Restore old element
-    m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
-	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
-	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
-	// Store new as old
+    if (m_old_click_element != "") {
+        this->page()->runJavaScript("document.getElementById(\""+m_old_click_element+"\").style.border"+" = \""+m_old_click_border+"\";");
+    }
+    // Store new as old
 	m_old_click_element = hitTestResult;
 	// Store old properties to be able to restore later
-	m_old_click_borderstyle = "";
-	m_old_click_borderwidth = "";
-	m_old_click_bordercolor = "";
-	// Highlight
-	m_old_click_element.setStyleProperty("border-style", "solid"  );
-	m_old_click_element.setStyleProperty("border-width", "3px"    );
-    m_old_click_element.setStyleProperty("border-color", "#FF0000"); // red
-
-}*/
+    this->page()->runJavaScript("document.getElementById(\""+m_old_click_element+"\").style.border;", [&](const QVariant &result){
+        m_old_click_border = result.toString();
+        this->page()->runJavaScript("document.getElementById(\""+m_old_click_element+"\").style.border = \"3px solid #FF0000\";");
+    });
+}
 
 void MyWebView::on_HighlightTreeSelectedElem(QString name)
 {
 	if (!m_boolEnableEvtProcess) { return; }
    // QWebElement welemTemp = page()->mainFrame()->documentElement();
-   // QWebElement webelem = FindElementByName(welemTemp, name);
-	
+   // QWebElement webelem = getElementById(welemTemp, name);
+    //"document.getElementById(\""+name+"\");"
 /*	if (webelem.isNull())
 	{
 		qDebug() << "[ERROR] Invalid QWebElement in MyWebView::on_HighlightTreeSelectedElem.";
 		return;
     }*/
-//	ChangeClickedElemColor(webelem);
+    ChangeClickedElemColor(name);
 }
 
-/*QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
-{
-    if (elem.attribute("id").compare(name, Qt::CaseInsensitive) == 0)
-	{
-		return elem;
-	}
-	else
-	{
-		QWebElement childelem = elem.firstChild();
-		QWebElement retelem;
-		while (!childelem.isNull())
-		{
-			retelem = FindElementByName(childelem, name);
-			if (!retelem.isNull())
-			{
-				return retelem;
-			}
-			childelem = childelem.nextSibling();
-		}
-    }
-	return QWebElement();
-}
-*/
 
 void MyWebView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -255,25 +236,30 @@ void MyWebView::leaveEvent(QEvent * event)
 	if (!m_boolEnableEvtProcess) { return; }
 
 	// Restore old element
+    if (m_old_hover_element!="")
+        this->page()->runJavaScript("document.getElementById(\""+m_old_hover_element+"\").removeClass(\""+g_strHighlightClassName+"\");");
+
     //m_old_hover_element.removeClass(g_strHighlightClassName);
 }
 
 void MyWebView::on_loadStarted()
 {
 	m_boolEnableEvtProcess = false;
+    this->page()->runJavaScript("document.getElementById(\""+m_old_hover_element+"\").removeClass(\""+g_strHighlightClassName+"\");", [&](const QVariant &result){
 
-    //m_old_hover_element.removeClass(g_strHighlightClassName);
+            //m_old_hover_element.removeClass(g_strHighlightClassName);
 
-	m_strCurrentElemId = "";
+            m_strCurrentElemId = "";
 
-//	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
-//	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
-//	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
+            this->page()->runJavaScript("document.getElementById(\""+m_old_click_element+"\").style.border"+" = \""+m_old_click_border+"\";");
 
-    //m_old_click_element = QWebElement();
-	m_old_click_borderstyle = "";
-	m_old_click_borderwidth = "";
-	m_old_click_bordercolor = "";
+
+            m_old_click_element = "";
+            m_old_click_borderstyle = "";
+            m_old_click_borderwidth = "";
+            m_old_click_bordercolor = "";
+    });
+
 }
 
 void MyWebView::on_loadFinished(bool ok)
@@ -309,15 +295,10 @@ void MyWebView::SetHighlightStyleClass(QString strClassName, QString &strTmpStyl
 	QByteArray  strComposedStyle("." + strClassName.toUtf8() + " { " + strTmpStyle.toUtf8()  + " }");
 
     this->page()->runJavaScript("fetchStyle(\""+QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()).toString()+"\")");
-    //QWebEngineSettings *settings = QWebEngineSettings::globalSettings();
-    //settings->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()));
-
 }
 
-void MyWebView::FindCloserContainer(Element elem,QString returnFunctor)
+bool MyWebView::bIsContainer(Element elem)
 {
-	// find by elem id
-    bool       bIsContainer = false;
     WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(elem);
     // check if valid parent
 	if (welem)
@@ -331,23 +312,10 @@ void MyWebView::FindCloserContainer(Element elem,QString returnFunctor)
 			delem.attribute(g_strClassAttr).compare("WStackedWidget"  ) == 0 ||
 			delem.attribute(g_strClassAttr).compare("WTabItem"        ) == 0)
 		{
-			bIsContainer = true;
+            return true;
 		}
 	}
-	// if container return, else keep looking
-	if (bIsContainer)
-    {
-        //tell js
-        this->page()->runJavaScript(returnFunctor+"(\""+elem+"\")");
-	}
-	else
-    {
-            this->page()->runJavaScript("document.getElementById("+elem+").parentNode.id;", [&](const QVariant &result){
-                //QWebElement welemTemp = elem.parent();
-                if (result.toString() != NULL)
-                    FindCloserContainer(result.toString(),returnFunctor);
-            });
-    }
+    return false;
 }
 
 void MyWebView::FindCloserWidget(Element elem,QString returnFunctor)
@@ -361,7 +329,7 @@ void MyWebView::FindCloserWidget(Element elem,QString returnFunctor)
 	}
 	else
 	{
-        this->page()->runJavaScript("document.getElementById("+elem+").parentNode.id;", [&](const QVariant &result){
+        this->page()->runJavaScript("document.getElementById(\""+elem+"\").parentNode.id;", [&](const QVariant &result){
             //QWebElement welemTemp = elem.parent();
             FindCloserWidget(result.toString(),returnFunctor);
         });
