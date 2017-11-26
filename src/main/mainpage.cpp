@@ -51,13 +51,13 @@ void MainPage::create()
 	QEventLoop evtblocker;
 	m_qtroot = new SignalEmiter(NULL, this);
 	// from mainwindow to mainpage
-	QObject::connect(m_mainwindow                 , SIGNAL(SendCurrentConfig(QString))                                      , m_qtroot, SLOT(on_ReceivedCurrentConfig(QString))                                   , Qt::QueuedConnection);
-	QObject::connect(m_mainwindow                 , SIGNAL(ElementEliminated(QString))                                      , m_qtroot, SLOT(on_ElementEliminated(QString))                                       , Qt::QueuedConnection);
-	QObject::connect(m_mainwindow                 , SIGNAL(PropertyChanged(QString, QString, QString))                      , m_qtroot, SLOT(on_PropertyChanged(QString, QString, QString))                       , Qt::QueuedConnection);
-	QObject::connect(m_mainwindow                 , SIGNAL(ConnectionChanged(QString, QString, QString, QString, QString))  , m_qtroot, SLOT(on_ConnectionChanged(QString, QString, QString, QString, QString))   , Qt::QueuedConnection);
-	QObject::connect(&m_mainwindow->m_sigslotmodel, SIGNAL(DisconnectOldSignal(QString, QString, QString, QString, QString)), m_qtroot, SLOT(on_DisconnectOldSignal(QString, QString, QString, QString, QString)) , Qt::QueuedConnection);
-	QObject::connect(m_mainwindow                 , SIGNAL(InsertConfig(QByteArray, QString, int))                          , m_qtroot, SLOT(on_InsertConfig(QByteArray, QString, int))                           , Qt::QueuedConnection);
-	QObject::connect(m_mainwindow                 , SIGNAL(UpdateAllProperties())                                           , m_qtroot, SLOT(on_UpdateAllProperties())                                            , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(SendCurrentConfig(QString))                                      , m_qtroot, SLOT(on_ReceivedCurrentConfig(QString))                                   , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(ElementEliminated(QString))                                      , m_qtroot, SLOT(on_ElementEliminated(QString))                                       , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(PropertyChanged(QString, QString, QString))                      , m_qtroot, SLOT(on_PropertyChanged(QString, QString, QString))                       , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(ConnectionChanged(QString, QString, QString, QString, QString))  , m_qtroot, SLOT(on_ConnectionChanged(QString, QString, QString, QString, QString))   , Qt::QueuedConnection);
+    QObject::connect(&m_mainwindow->m_sigslotmodel, SIGNAL(DisconnectOldSignal(QString, QString, QString, QString, QString)), m_qtroot, SLOT(on_DisconnectOldSignal(QString, QString, QString, QString, QString)) , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(InsertConfig(QByteArray, QString, int))                          , m_qtroot, SLOT(on_InsertConfig(QByteArray, QString, int))                           , Qt::QueuedConnection);
+    QObject::connect(m_mainwindow                 , SIGNAL(UpdateAllProperties())                                           , m_qtroot, SLOT(on_UpdateAllProperties())                                            , Qt::QueuedConnection);
 
 	// from mainpage to mainwindow
 	QObject::connect(m_qtroot, SIGNAL(RequestCurrentConfig())                    , m_mainwindow , SLOT(on_RequestCurrentConfig())                    , Qt::QueuedConnection);
@@ -79,8 +79,7 @@ void MainPage::create()
 		// mark as connected
 		qtConnected     = true;
 		thisQtConnected = true;
-	}
-
+    }
 	// request current config
 	Q_EMIT m_qtroot->RequestCurrentConfig();
 	// wait for it
@@ -95,8 +94,7 @@ void MainPage::create()
 	{
 		QMessageBox::critical(0, QObject::tr("XML Error"), QObject::tr("Not a valid *.wui file"));
 		return;
-	}
-
+    }
 	// set CSS Theme
 	// (http://www.webtoolkit.eu/widgets/layout/themes)
 	// (http://www.webtoolkit.eu/wt/doc/reference/html/classWt_1_1WBootstrapTheme.html)
@@ -106,13 +104,13 @@ void MainPage::create()
 	{
 		Wt::WBootstrapTheme * p_wtTheme = new Wt::WBootstrapTheme();
         p_wtTheme->setVersion(Wt::BootstrapVersion::v3);
-        //setTheme(p_wtTheme); //TODO: Maybe Fix
+        setTheme(std::unique_ptr<Wt::WBootstrapTheme>{std::move(p_wtTheme)}); //TODO: Maybe Fix
 	}
 	else if (m_qtroot->m_strWtTheme.compare(g_strThemeBootstrat2) == 0)
 	{
 		Wt::WBootstrapTheme * p_wtTheme = new Wt::WBootstrapTheme();
         p_wtTheme->setVersion(Wt::BootstrapVersion::v2);
-        //setTheme(p_wtTheme);
+        setTheme(std::unique_ptr<Wt::WBootstrapTheme>{std::move(p_wtTheme)});
 	}
 	else if (m_qtroot->m_strWtTheme.compare(g_strThemePolished) == 0)
 	{
@@ -121,8 +119,7 @@ void MainPage::create()
 	else if (m_qtroot->m_strWtTheme.compare(g_strThemeNone) == 0)
 	{
 		setCssTheme("");
-	}
-
+    }
 	// set browser tab title
 	m_qtroot->m_strWtTitle = docElem.attribute(g_strTitleAttr); // COPY title
 	setTitle(m_qtroot->m_strWtTitle.toStdString());
@@ -140,11 +137,12 @@ void MainPage::create()
 					 << m_qtroot->m_listConnections.at(i)->m_strreceiver  << ", "
 					 << m_qtroot->m_listConnections.at(i)->m_strslot      << ", "
 					 << m_qtroot->m_listConnections.at(i)->m_strparameter << ")";
-		}
+        }
 	}
 
 	// let know main application that a new client has connected
-	Q_EMIT m_qtroot->NewClientConneted();
+    Q_EMIT m_qtroot->NewClientConneted();
+    //root()->addWidget(Wt::cpp14::make_unique<Wt::WText>("Your name, please? "));
 }
 
 void MainPage::destroy()
@@ -205,6 +203,8 @@ void MainPage::LoadRecursiveTree(QDomElement element, Wt::WContainerWidget *wpar
 	if (element.tagName().compare(g_strWRootTag, Qt::CaseInsensitive) == 0)
 	{ // case parent is wroot
 		object = qparent;
+        //Lets do a test...
+        //root()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Your name, please? "));
 	}
 	else
 	{ // case is wobject
@@ -412,7 +412,7 @@ WidgetFactory(QObject *qparent,
         WtWidgetT* obj2 = dynamic_cast<WtWidgetT*>(object);
         //WtWidgetT()
         // TODO FIX THIS BELOW...................
-
+        std::cout << "Here" << std::endl;
         wparent->insertWidget(row, std::unique_ptr<WtWidgetT>{std::move(obj2)});
         return object;
     }
@@ -792,7 +792,7 @@ void SignalEmiter::on_InsertConfig(QByteArray strConfigFraction, QString strPare
 			mp_owner->triggerUpdate();
 		}
 	} // TODO : crashes here when enable to load Wt_htmlTagName property in MainPage::LoadRecursiveTree
-	//Q_EMIT GenerateAllProperties(strParentName);
+    //Q_EMIT GenerateAllProperties(strParentName);
 }
 
 

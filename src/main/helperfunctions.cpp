@@ -748,7 +748,8 @@ Wt::WContainerWidget * GetWContainerParent(QObject *qparent)
 {
 	QString strParentType;
 	Wt::WContainerWidget *wobject = NULL;
-	if (qparent->property("Wt_className").toString().compare("WGroupBox") == 0)
+    std::cout << qparent->property("Wt_className").toString().toStdString() << std::endl;
+    if (qparent->property("Wt_className").toString().compare("WGroupBox") == 0)
 	{
 		wobject = dynamic_cast<Wt::WGroupBox*>(dynamic_cast<WtQtGroupBox*>(qparent));               strParentType = "WGroupBox";
 	}																							    

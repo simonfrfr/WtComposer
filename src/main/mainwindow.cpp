@@ -143,7 +143,7 @@ void MainWindow::SetupPersistSettings()
 	m_vectWtParams[WT_PARDOCROOT]  = "--docroot";
 	m_vectWtParams[WT_VALDOCROOT]  = ".";                 // (http://www.webtoolkit.eu/wt/doc/reference/html/overview.html#config_wthttpd)
 	m_vectWtParams[WT_PARHTTPADDR] = "--http-address";
-    m_vectWtParams[WT_VALHTTPADDR] = "0.0.0.0";
+    m_vectWtParams[WT_VALHTTPADDR] = "127.0.0.1";
 	m_vectWtParams[WT_PARHTTPPORT] = "--http-port";
 	m_vectWtParams[WT_VALHTTPPORT] = "8081";              
 	// set responsive design default sizes
@@ -453,8 +453,7 @@ void MainWindow::StartWtServer()
     {
         argv.emplace_back(const_cast<char *>(s.c_str()));
     }
-    m_server = std::unique_ptr < Wt::WServer
-            > (new Wt::WServer(argv.size(), argv.data()));
+    m_server = Wt::cpp14::make_unique<Wt::WServer>(argv.size(), argv.data());
 
 
     m_server->addEntryPoint(Wt::EntryPointType::Application,std::bind(&createApplication,std::placeholders::_1,this));

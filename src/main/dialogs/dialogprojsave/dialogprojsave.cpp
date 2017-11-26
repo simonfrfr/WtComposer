@@ -21,6 +21,7 @@
 #include "helperfunctions.h"
 #endif
 
+#include <QFileDialog>
 #include <QRegExpValidator>
 
 
@@ -29,6 +30,7 @@ DialogProjSave::DialogProjSave(QWidget *parent) :
     ui(new Ui::DialogProjSave)
 {
     ui->setupUi(this);
+
     // Set file system model
     m_modelCurrent.setRootPath(QUrl::fromLocalFile("").toString());
     m_modelCurrent.setNameFilters(QStringList() << "[^.]*"); // hide folders starting with dot (See QRegExp wildcard matching.)
@@ -81,7 +83,20 @@ DialogProjSave::~DialogProjSave()
 
 void DialogProjSave::on_pushButtonSave_clicked()
 {
-
+ /*   QString j = QFileDialog::getSaveFileName(this,
+            tr("Save Ui Project"), "",
+            tr("Wt Ui (*.wui)"));
+    if (j != "" && j != NULL){
+        QString path = j;
+        QString file = path.section("/",-1,-1);
+        QString dir = path.section("/",0,-2);
+        Q_EMIT saveNewProject(dir,file);
+        accept();
+    }
+    else {
+        reject();
+    }*/
+/*
     QString strSelDir  = ui->lineEditSelected->text();
     // Show warning message if empty projname
     if(strSelDir.isEmpty())
@@ -108,7 +123,7 @@ void DialogProjSave::on_pushButtonSave_clicked()
 
     // Emit signal for loading project
     Q_EMIT saveNewProject(strSelDir + "/", strSelProjName);
-    accept();
+    accept();*/
 }
 
 void DialogProjSave::on_pushCancel_clicked()

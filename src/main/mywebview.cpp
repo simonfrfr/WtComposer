@@ -125,29 +125,29 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 
 QString MyWebView::GetCloserContainerId()
 {
-	QWebElement elemCurrent = FindCloserContainer(m_old_click_element);
+//	QWebElement elemCurrent = FindCloserContainer(m_old_click_element);
     return "id";//elemCurrent.attribute("id");
 }
 
-void MyWebView::ChangeHoveredElemColor(QWebElement &hitTestResult)
+/*void MyWebView::ChangeHoveredElemColor(QWebElement &hitTestResult)
 {
 	if (!m_boolEnableEvtProcess) { return; }
 	// approach of creating class in user css for qwebview, and then toggle the class
 
 	// Restore old element
-//	m_old_hover_element.removeClass(g_strHighlightClassName);
+    m_old_hover_element.removeClass(g_strHighlightClassName);
 	// Store new as old
 	m_old_hover_element = hitTestResult;
 	// Highlight
-//	m_old_hover_element.addClass(g_strHighlightClassName);
-}
+    m_old_hover_element.addClass(g_strHighlightClassName);
+}*/
 
-void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
+/*void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
 {
 	if (!m_boolEnableEvtProcess) { return; }
 
 	// Restore old element
-/*	m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
+    m_old_click_element.setStyleProperty("border-style", m_old_click_borderstyle);
 	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
 	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
 	// Store new as old
@@ -159,9 +159,9 @@ void MyWebView::ChangeClickedElemColor(QWebElement &hitTestResult)
 	// Highlight
 	m_old_click_element.setStyleProperty("border-style", "solid"  );
 	m_old_click_element.setStyleProperty("border-width", "3px"    );
-    m_old_click_element.setStyleProperty("border-color", "#FF0000"); // red*/
+    m_old_click_element.setStyleProperty("border-color", "#FF0000"); // red
 
-}
+}*/
 
 void MyWebView::on_HighlightTreeSelectedElem(QString name)
 {
@@ -177,9 +177,9 @@ void MyWebView::on_HighlightTreeSelectedElem(QString name)
 //	ChangeClickedElemColor(webelem);
 }
 
-QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
+/*QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
 {
-/*	if (elem.attribute("id").compare(name, Qt::CaseInsensitive) == 0)
+    if (elem.attribute("id").compare(name, Qt::CaseInsensitive) == 0)
 	{
 		return elem;
 	}
@@ -196,9 +196,10 @@ QWebElement MyWebView::FindElementByName(QWebElement &elem, QString &name)
 			}
 			childelem = childelem.nextSibling();
 		}
-    }*/
+    }
 	return QWebElement();
 }
+*/
 
 void MyWebView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -269,7 +270,7 @@ void MyWebView::on_loadStarted()
 //	m_old_click_element.setStyleProperty("border-width", m_old_click_borderwidth);
 //	m_old_click_element.setStyleProperty("border-color", m_old_click_bordercolor);
 
-	m_old_click_element = QWebElement();
+    //m_old_click_element = QWebElement();
 	m_old_click_borderstyle = "";
 	m_old_click_borderwidth = "";
 	m_old_click_bordercolor = "";
@@ -307,18 +308,18 @@ void MyWebView::SetHighlightStyleClass(QString strClassName, QString &strTmpStyl
 {
 	QByteArray  strComposedStyle("." + strClassName.toUtf8() + " { " + strTmpStyle.toUtf8()  + " }");
 
-//	QWebSettings *settings = QWebSettings::globalSettings();
-//	settings->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()));
+    this->page()->runJavaScript("fetchStyle(\""+QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()).toString()+"\")");
+    //QWebEngineSettings *settings = QWebEngineSettings::globalSettings();
+    //settings->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + strComposedStyle.toBase64()));
 
 }
 
-QWebElement MyWebView::FindCloserContainer(QWebElement &elem)
+void MyWebView::FindCloserContainer(Element elem,QString returnFunctor)
 {
 	// find by elem id
-	bool       bIsContainer = false;
- //   QString strTemp = elem.attribute("id");
-    /*WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName (strTemp);
-	// check if valid parent
+    bool       bIsContainer = false;
+    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(elem);
+    // check if valid parent
 	if (welem)
 	{
 		QDomElement delem = welem->getElem();
@@ -335,39 +336,36 @@ QWebElement MyWebView::FindCloserContainer(QWebElement &elem)
 	}
 	// if container return, else keep looking
 	if (bIsContainer)
-	{
-		return elem;
+    {
+        //tell js
+        this->page()->runJavaScript(returnFunctor+"(\""+elem+"\")");
 	}
 	else
-    {*/
-    /*	if (!elem.parent().isNull())
-		{
-            QWebElement welemTemp = elem.parent();
-            return FindCloserContainer(welemTemp);
-		}
-		else
-		{
-			return QWebElement();
-        }*/
-        return QWebElement();//Remove this
-    //}
+    {
+            this->page()->runJavaScript("document.getElementById("+elem+").parentNode.id;", [&](const QVariant &result){
+                //QWebElement welemTemp = elem.parent();
+                if (result.toString() != NULL)
+                    FindCloserContainer(result.toString(),returnFunctor);
+            });
+    }
 }
 
-QWebElement MyWebView::FindCloserWidget(QWebElement &elem)
+void MyWebView::FindCloserWidget(Element elem,QString returnFunctor)
 {
-  //  QString strTemp = elem.attribute("id");
-//    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(strTemp);
+    WDomElem * welem = m_pMainWindow->m_treemodel.getElemByName(elem);
 	// check if valid parent
-    //if (welem)
-/*	{
-		return elem;
+    if (welem)
+    {
+        //tell js
+        this->page()->runJavaScript(returnFunctor+"(\""+elem+"\")");
 	}
 	else
 	{
-        QWebElement welemTemp = elem.parent();
-        return FindCloserWidget(welemTemp);
-    }*/
-        return QWebElement();//Remove this
+        this->page()->runJavaScript("document.getElementById("+elem+").parentNode.id;", [&](const QVariant &result){
+            //QWebElement welemTemp = elem.parent();
+            FindCloserWidget(result.toString(),returnFunctor);
+        });
+    }
 }
 
 

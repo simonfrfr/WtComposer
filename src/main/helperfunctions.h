@@ -30,7 +30,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QWebEnginePage>
-#include <qwebelement.h>
+//#include <qwebelement.h>
 #include <QMessageBox>
 #include <QSvgRenderer>
 #include <QPainter>

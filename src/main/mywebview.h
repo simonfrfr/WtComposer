@@ -28,7 +28,6 @@
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <qwebelement.h>
 #include <QWebChannel>
 
 class MainWindow;
@@ -37,16 +36,17 @@ class MyWebView : public QWebEngineView
 {
 	Q_OBJECT
 public:
+    typedef QString Element;
 	explicit MyWebView(QWidget * parent = 0);
 
 	bool        eventFilter(QObject * watched, QEvent * event);
-    void		ChangeHoveredElemColor(QWebElement &hitTestResult);
-	void        ChangeClickedElemColor(QWebElement &hitTestResult);
+ //   void		ChangeHoveredElemColor(QWebElement &hitTestResult);
+//	void        ChangeClickedElemColor(QWebElement &hitTestResult);
 	void        SetHighlightStyleClass(QString strClassName, QString &strTmpStyle);
 
-	QWebElement FindCloserContainer(QWebElement &elem);
-	QWebElement FindCloserWidget(QWebElement &elem);
-	QWebElement FindElementByName(QWebElement &elem, QString &name);
+//	QWebElement FindCloserContainer(QWebElement &elem);
+//
+//	QWebElement FindElementByName(QWebElement &elem, QString &name);
 
 	QString     GetCloserContainerId();
 
@@ -66,19 +66,24 @@ Q_SIGNALS:
 public Q_SLOTS:
 	void on_HighlightTreeSelectedElem(QString name);
 
-    void onHover(int x, int y);
 	void on_loadStarted();
 	void on_loadFinished(bool ok);
 
+    // JS C++ Channel Links
+    void onHover(int x, int y);
+    void FindCloserContainer(Element elem, QString returnFunctor);
+    void FindCloserWidget(Element elem, QString returnFunctor);
+
 private:
+
     void openChannel();
 
 	QString            m_strCurrentElemId;
-	QWebElement        m_old_hover_element;
+//	QWebElement        m_old_hover_element;
     QWebChannel        m_web_channel;
 
 	// TODO : change to css class aproach
-	QWebElement        m_old_click_element;
+//	QWebElement        m_old_click_element;
 	QString            m_old_click_borderstyle = "";
 	QString            m_old_click_borderwidth = "";
 	QString            m_old_click_bordercolor = "";

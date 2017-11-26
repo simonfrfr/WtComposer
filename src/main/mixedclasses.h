@@ -204,7 +204,7 @@ public:
 
 	Wt_Signals_ GetSignalEnumByName(QString name);
 
-	QHash<QString, Wt::Signals::connection> m_hashconnections;
+    QHash<QString, Wt::Signals::connection> m_hashconnections;
 
 };
 
@@ -423,7 +423,7 @@ class WtQtPushButton : public WtQtFormWidget, public Wt::WPushButton
 
 public:
 	WtQtPushButton(Wt::WContainerWidget *wparent = 0, QObject *qparent = 0);
-	~WtQtPushButton();
+    ~WtQtPushButton();
 	WtQtPushButton(const WtQtPushButton& other);
 
 	QString Wt_className();

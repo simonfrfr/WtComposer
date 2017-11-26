@@ -32,5 +32,32 @@
         <file>resources/collapse-rtl.gif</file>
         <file>resources/calendar_edit.png</file>
         <file>resources/ajax-loading.gif</file>
+        <file>resources/themes/bootstrap/splitter-v.png</file>
+        <file>resources/themes/bootstrap/splitter-h.png</file>
+        <file>resources/themes/bootstrap/sort-arrow-up.gif</file>
+        <file>resources/themes/bootstrap/sort-arrow-none.gif</file>
+        <file>resources/themes/bootstrap/sort-arrow-down.gif</file>
+        <file>resources/themes/bootstrap/nav-plus.gif</file>
+        <file>resources/themes/bootstrap/nav-plus-rtl.gif</file>
+        <file>resources/themes/bootstrap/nav-minus.gif</file>
+        <file>resources/themes/bootstrap/nav-minus-rtl.gif</file>
+        <file>resources/themes/bootstrap/3/wt.less</file>
+        <file>resources/themes/bootstrap/3/wt.css</file>
+        <file>resources/themes/bootstrap/3/time-edit-button.png</file>
+        <file>resources/themes/bootstrap/3/suggest-dropdown.svg</file>
+        <file>resources/themes/bootstrap/3/suggest-dropdown.png</file>
+        <file>resources/themes/bootstrap/3/spin-buttons.svg</file>
+        <file>resources/themes/bootstrap/3/spin-buttons.png</file>
+        <file>resources/themes/bootstrap/3/date-edit-button.svg</file>
+        <file>resources/themes/bootstrap/3/date-edit-button.png</file>
+        <file>resources/themes/bootstrap/3/bootstrap.min.css</file>
+        <file>resources/themes/bootstrap/3/bootstrap.css.map</file>
+        <file>resources/themes/bootstrap/3/bootstrap.css</file>
+        <file>resources/themes/bootstrap/3/bootstrap-theme.min.css</file>
+        <file>resources/themes/bootstrap/3/bootstrap-theme.css.map</file>
+        <file>resources/themes/bootstrap/3/bootstrap-theme.css</file>
+        <file>resources/themes/bootstrap/img/glyphicons-halflings.png</file>
+        <file>resources/themes/bootstrap/img/glyphicons-halflings-white.png</file>
+        <file>default_resources.qrc</file>
     </qresource>
 </RCC>
