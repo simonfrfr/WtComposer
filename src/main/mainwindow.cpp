@@ -143,7 +143,7 @@ void MainWindow::SetupPersistSettings()
 	m_vectWtParams[WT_PARDOCROOT]  = "--docroot";
 	m_vectWtParams[WT_VALDOCROOT]  = ".";                 // (http://www.webtoolkit.eu/wt/doc/reference/html/overview.html#config_wthttpd)
 	m_vectWtParams[WT_PARHTTPADDR] = "--http-address";
-	m_vectWtParams[WT_VALHTTPADDR] = "0.0.0.0";           
+    m_vectWtParams[WT_VALHTTPADDR] = "0.0.0.0";
 	m_vectWtParams[WT_PARHTTPPORT] = "--http-port";
 	m_vectWtParams[WT_VALHTTPPORT] = "8081";              
 	// set responsive design default sizes
@@ -488,7 +488,8 @@ void MainWindow::StopWtServer()
     {
         try
         {
-            m_server->stop();
+            //m_server.release();
+            //m_server = nullptr;
         } catch (const Wt::WServer::Exception &e)
         {
             qCritical() << "wt server stop failed with: " << e.what();

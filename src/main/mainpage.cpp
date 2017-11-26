@@ -411,7 +411,7 @@ WidgetFactory(QObject *qparent,
         QObject * object = new WidgetT(NULL, qparent);
         WtWidgetT* obj2 = dynamic_cast<WtWidgetT*>(object);
         //WtWidgetT()
-        //TODO FIX THIS BELOW...................
+        // TODO FIX THIS BELOW...................
 
         wparent->insertWidget(row, std::unique_ptr<WtWidgetT>{std::move(obj2)});
         return object;
