@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/default">
+        <file>default.wui</file>
+        <file>resources/webkit-transitions.css</file>
+        <file>resources/tv-line-last.gif</file>
+        <file>resources/tv-line-last-rtl.gif</file>
+        <file>resources/transitions.css</file>
+        <file>resources/tab_r.gif</file>
+        <file>resources/tab_l.gif</file>
+        <file>resources/tab_b.gif</file>
+        <file>resources/style.css</file>
+        <file>resources/right-arrow.gif</file>
+        <file>resources/resizable.png</file>
+        <file>resources/plus.gif</file>
+        <file>resources/moz-transitions.css</file>
+        <file>resources/minus.gif</file>
+        <file>resources/main.css</file>
+        <file>resources/loading.png</file>
+        <file>resources/line-trunk.gif</file>
+        <file>resources/line-middle.gif</file>
+        <file>resources/line-middle-rtl.gif</file>
+        <file>resources/line-last.gif</file>
+        <file>resources/line-last-rtl.gif</file>
+        <file>resources/items.gif</file>
+        <file>resources/items-ok.gif</file>
+        <file>resources/items-not-ok.gif</file>
+        <file>resources/html4_default.css</file>
+        <file>resources/form.css</file>
+        <file>resources/expand.gif</file>
+        <file>resources/expand-rtl.gif</file>
+        <file>resources/collapse.gif</file>
+        <file>resources/collapse-rtl.gif</file>
+        <file>resources/calendar_edit.png</file>
+        <file>resources/ajax-loading.gif</file>
+    </qresource>
+</RCC>

@@ -25,7 +25,7 @@ MyWebView::MyWebView(QWidget *parent) : QWebEngineView(parent)
     setMouseTracking(true);
 	m_strCurrentElemId = "";
 	installEventFilter(this);
-	setAcceptDrops(true);
+    setAcceptDrops(true);
     QObject::connect( this, SIGNAL(loadStarted())     , this, SLOT(on_loadStarted()));
     QObject::connect( this, SIGNAL(loadFinished(bool)), this, SLOT(on_loadFinished(bool)) );
 	// set qt style to webview
@@ -34,14 +34,26 @@ MyWebView::MyWebView(QWidget *parent) : QWebEngineView(parent)
 	QString     strStyle = "border-style  : solid    !important; "
 						   "border-width  : 2px      !important; "
 						   "border-color  : #f0f090  !important; ";
-	SetHighlightStyleClass(g_strHighlightClassName, strStyle);
-
-    //this->mouseMoveEvent(new );
-    //QString code = "document.addEventListener('mousemove', function(e) {\
-     //       console.log(document.elementFromPoint(e.pageX, e.pageY)); \
-      //  })";
+    SetHighlightStyleClass(g_strHighlightClassName, strStyle);
+    openChannel();
 }
+void MyWebView::onHover(int x, int y){
+    std::cout <<"("<< x << ", " << y << ")" << std::endl;
+}
+QString MyWebView::readFile (const QString& filename)
+{
+    QFile file(filename);
 
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream stream(&file);
+        return stream.readAll();
+    }
+    else {
+        qDebug()<<"Couldn't load "<< filename <<" API!";
+    }
+    return "";
+}
 bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 {
 	if (!m_boolEnableEvtProcess) { return false; }
@@ -52,6 +64,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
         QWebEngineView *view          = dynamic_cast<QWebEngineView*>(watched);
 		QPoint pos              = view->mapFromGlobal(mouseEvent->globalPos());
         // Will incorperate QWebChannel
+
         /*
         auto *frame        = view->page()->frameAt(mouseEvent->pos());
 		if (frame!=NULL)
@@ -83,7 +96,7 @@ bool MyWebView::eventFilter(QObject *watched, QEvent *event)
 	else if (event->type() == QEvent::MouseButtonPress)
 	{
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-         std::cout << "QEvent::MouseButtonPress" << std::endl;
+         //std::cout << "QEvent::MouseButtonPress" << std::endl;
     /*	if (mouseEvent->button() == Qt::LeftButton)
 		{
             QWebEngineView *view = dynamic_cast<QWebView*>(watched);
@@ -233,7 +246,7 @@ void MyWebView::dropEvent(QDropEvent *event)
 		Q_EMIT receivedDragOnWebview(event->mimeData()->data(g_strWtwMime), m_strCurrentElemId);
 		event->setDropAction(Qt::CopyAction);
 		event->accept();
-	}
+    }
 }
 
 void MyWebView::leaveEvent(QEvent * event)
@@ -276,7 +289,18 @@ void MyWebView::on_loadFinished(bool ok)
 			m_pMainWindow = p_mwindow;
 			Q_EMIT m_pMainWindow->RequestAllProperties("");
 		}
-	}
+    }
+    openChannel();
+}
+
+void MyWebView::openChannel(){
+        this->page()->setWebChannel(&m_web_channel);
+        m_web_channel.registerObject(QStringLiteral("mywebview"), this);//Ok Now we want to
+        this->page()->runJavaScript(readFile(":/qtwebchannel/qwebchannel.js"));
+        this->page()->runJavaScript(readFile(":runner.js"));
+        this->page()->runJavaScript("initialise();");
+        std::cout << "Channel Opened!" << std::endl;
+
 }
 
 void MyWebView::SetHighlightStyleClass(QString strClassName, QString &strTmpStyle)

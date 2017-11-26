@@ -31,7 +31,7 @@ MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
 	// set all icons color
 	SetAllIcons("white");
 	// configure model-views
-	m_pwidgetmodel = new MyWidgetModel(g_strLocalWidgetsPath, this); // widget model should come first because it loads the icons
+    m_pwidgetmodel = new MyWidgetModel(":/widgets", this); // widget model should come first because it loads the icons
 	ui.treeviewWtWidgets->setModel(m_pwidgetmodel);
 	ui.treeviewWtWidgets->expandAll();
 	ui.treeviewWtTree->setModel(&m_treemodel);
@@ -418,7 +418,7 @@ void MainWindow::LoadDefaultConfig()
 	// shutdown Wt server
 	StopWtServer();
 	// set default config in m_currentState
-	LoadProjectPath(g_strLocalRootPath + g_strDefaultProjPath);
+    LoadProjectPath(":/default/");//g_strLocalRootPath + g_strDefaultProjPath);
 	// start Wt server
 	StartWtServer();
 }
@@ -535,7 +535,7 @@ void MainWindow::LoadFileConfig(QByteArray config)
 	ui.treeviewWtTree->expandAll();
 
 	// reload resources model
-	ui.treeviewWtResources->setRootIndex(m_resourcesmodel.index(g_strLocalResourcesPath));
+    ui.treeviewWtResources->setRootIndex(m_resourcesmodel.index(g_strLocalResourcesPath));
 
 	// reload the page, create new wt session
 	on_ReloadPage();

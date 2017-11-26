@@ -29,6 +29,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <qwebelement.h>
+#include <QWebChannel>
 
 class MainWindow;
 
@@ -57,6 +58,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 
 Q_SIGNALS:
+
 	void mouseMovedOverElem(QString elem, QString strClass);
 	void mouseLeftClickedOverElem(QString elem);
 	void receivedDragOnWebview(QByteArray baconfigChunk, QString strParentElemId);
@@ -64,12 +66,16 @@ Q_SIGNALS:
 public Q_SLOTS:
 	void on_HighlightTreeSelectedElem(QString name);
 
+    void onHover(int x, int y);
 	void on_loadStarted();
 	void on_loadFinished(bool ok);
 
 private:
+    void openChannel();
+
 	QString            m_strCurrentElemId;
 	QWebElement        m_old_hover_element;
+    QWebChannel        m_web_channel;
 
 	// TODO : change to css class aproach
 	QWebElement        m_old_click_element;
@@ -79,6 +85,8 @@ private:
 
 	bool               m_boolEnableEvtProcess  = false;
 	bool               m_boolIsDraggingWidget  = false;
+
+    QString readFile (const QString& filename);
 
 	MainWindow       * m_pMainWindow = NULL;
 
