@@ -157,10 +157,11 @@ void MainPage::destroy()
     if (m_qtroot)
     {
         // clear connections list
-        qDeleteAll(m_qtroot->m_listConnections);
-        m_qtroot->m_listConnections.clear();
+        //qDeleteAll(m_qtroot->m_listConnections);
+        //m_qtroot->m_listConnections.clear();
         // delete qt object
-        delete m_qtroot;
+        //delete m_qtroot;
+        m_qtroot = NULL;
         m_qtroot = nullptr;
     }
 }
@@ -666,7 +667,10 @@ void SignalEmiter::on_ElementEliminated(QString strElemId)
 	{
 		// We now have exclusive access to the application: we can safely modify the widget tree for example.
 		QObject* objChanged = FindElementById(this, strElemId);
-		delete objChanged;
+        //delete objChanged;
+        objChanged = NULL;
+        objChanged = nullptr;
+
 		// Push the changes to the browser
 		mp_owner->triggerUpdate();
 	}
@@ -742,8 +746,8 @@ void SignalEmiter::on_DisconnectOldSignal(QString strSender, QString strSignal, 
 				if (strtotest.compare(strtodel) == 0)
 				{
 					Wt_ConnectionConfig *todelete = m_listConnections.takeAt(i);
-					delete todelete;
-					todelete = NULL;
+                    //delete todelete;
+                    todelete = nullptr;
 					break;
 				}
 			}

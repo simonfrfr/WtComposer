@@ -453,8 +453,8 @@ void MainWindow::StartWtServer()
     {
         argv.emplace_back(const_cast<char *>(s.c_str()));
     }
-    m_server = Wt::cpp14::make_unique<Wt::WServer>(argv.size(), argv.data());
-
+    if (m_server == nullptr)
+        m_server = Wt::cpp14::make_unique<Wt::WServer>(argv.size(), argv.data());
 
     m_server->addEntryPoint(Wt::EntryPointType::Application,std::bind(&createApplication,std::placeholders::_1,this));
     //TODO Make sure this is right!!!
@@ -465,7 +465,7 @@ void MainWindow::StartWtServer()
     } catch (const Wt::WServer::Exception &e)
     {
         qCritical() << "wt server start failed with: " << e.what();
-        m_server = decltype(m_server)();
+        //m_server = decltype(m_server)();
         return;
     }
     // load page [IMPORTANT] : DO NOT DELETE LINE BELOW OR PAGE WILL NEVER LOAD
@@ -489,13 +489,21 @@ void MainWindow::StopWtServer()
         {
             //m_server.release();
             //m_server = nullptr;
+            if (m_server->start()) {
+              m_server->waitForShutdown();
+              m_server->stop();
+              m_server.release();
+            }
         } catch (const Wt::WServer::Exception &e)
         {
             qCritical() << "wt server stop failed with: " << e.what();
         }
     }
     // dispose Wt server object by resetting unique_ptr
-    m_server = decltype(m_server)();
+    //m_server = decltype(m_server)();
+    //m_server.reset();
+    //m_server.release();
+
 
     // [NOTE] very important
     //m_WebView->settings()->clearMemoryCaches();

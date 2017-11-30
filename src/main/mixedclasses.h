@@ -423,7 +423,7 @@ class WtQtPushButton : public WtQtFormWidget, public Wt::WPushButton
 
 public:
 	WtQtPushButton(Wt::WContainerWidget *wparent = 0, QObject *qparent = 0);
-    ~WtQtPushButton();
+    //~WtQtPushButton();
 	WtQtPushButton(const WtQtPushButton& other);
 
 	QString Wt_className();
@@ -1301,7 +1301,7 @@ class WtQtTabWidget : public WtQtCompositeWidget, public Wt::WTabWidget
 
 public:
 	WtQtTabWidget(Wt::WContainerWidget *wparent = 0, QObject *qparent = 0);
-	~WtQtTabWidget();
+    ~WtQtTabWidget();
 	WtQtTabWidget(const WtQtTabWidget& other);
 
 	QString Wt_className();

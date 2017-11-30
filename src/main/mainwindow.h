@@ -200,6 +200,7 @@ protected:
 
 private:
 
+    std::unique_ptr<Wt::WApplication>  app;
 	int                m_argc;
 	char             **m_argv;
 	QVector<QString>   m_vectWtParams;

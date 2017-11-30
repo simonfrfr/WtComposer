@@ -37,7 +37,7 @@ TARGET        = WtComposer
 #CONFIG       += debug_and_release
 
 QT           += core xml widgets gui svg xmlpatterns
-QT += webenginewidgets webchannel websockets
+QT += webenginewidgets webchannel
 QT += KCompletion KTextEditor
 #QT           += webkitwidgets
 #DEFINES      += QT_DLL QT_WEBKITWIDGETS_LIB QT_WIDGETS_LIB QT_XML_LIB

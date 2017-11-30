@@ -70,6 +70,7 @@ public Q_SLOTS:
     // JS C++ Channel Links
     void onHover(int x, int y);
     bool bIsContainer(Element elem);
+    bool isDragging();
  //   void FindCloserContainer(Element elem, QString returnFunctor);
     void FindCloserWidget(Element elem, QString returnFunctor);
 

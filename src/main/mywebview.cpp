@@ -181,6 +181,9 @@ void MyWebView::on_HighlightTreeSelectedElem(QString name)
     ChangeClickedElemColor(name);
 }
 
+bool MyWebView::isDragging(){ // TODO make this work
+    return false;
+}
 
 void MyWebView::dragEnterEvent(QDragEnterEvent *event)
 {

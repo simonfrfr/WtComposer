@@ -592,11 +592,11 @@ WtQtPushButton::WtQtPushButton(const WtQtPushButton& other)
 	Q_UNUSED(other)
 }
 
-WtQtPushButton::~WtQtPushButton()
+/*WtQtPushButton::~WtQtPushButton()
 {
-    removeFromParent();
+  //  removeFromParent();
 
-}
+}*/
 
 QString WtQtPushButton::Wt_className()
 {
@@ -1007,20 +1007,21 @@ WtQtRadioButton::WtQtRadioButton(Wt::WContainerWidget *wparent /*= 0*/, QObject 
 		qDebug() << "[ERROR]";
 	}
 	QVector<WtQtRadioButton*> siblings = getSiblings();
-	Wt::WButtonGroup * buttongroup = NULL;
+    Wt::WButtonGroup * buttongroup = NULL;
 	int i = 0;
 	if (siblings.size() > 0)
 	{
 		while (!buttongroup && i < siblings.size())
 		{
-			buttongroup = siblings.at(i)->group();
+            buttongroup = siblings.at(i)->group();
 		}
 	}
 	if (!buttongroup)
 	{
-		buttongroup = new Wt::WButtonGroup();
+        buttongroup = new Wt::WButtonGroup();
 	}
-    buttongroup->addButton(this, -1); // TODO Make sure this was right 0 was -1
+    auto finalGroup = std::unique_ptr<Wt::WButtonGroup>{std::move(buttongroup)};
+    finalGroup->addButton(this,-1); // TODO Make sure this was right 0 was -1
 }
 
 WtQtRadioButton::WtQtRadioButton(const WtQtRadioButton& other)

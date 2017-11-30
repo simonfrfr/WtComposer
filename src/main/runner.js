@@ -4,6 +4,7 @@ var api;
 var widget ;
 var lastelm;
 var dragging;
+var elemCurrent;
 
 var isNull = function(obj) {
   return obj == null;
@@ -16,8 +17,15 @@ function initialise() {
       document.addEventListener('mousemove', function(e) {
           if (lastelm !== document.elementFromPoint(e.pageX, e.pageY)) {
               console.log(document.elementFromPoint(e.pageX, e.pageY));
-              lastelm = document.elementFromPoint(e.pageX, e.pageY);
-              widget.onHover(e.pageX, e.pageY);
+              elemCurrent = document.elementFromPoint(e.pageX, e.pageY);
+              
+              if (widget.isDragging()) {
+                findCloserContainer(elemCurrent);
+              }
+              if (elemCurrent !==null) {
+                widget.onHover(e.pageX, e.pageY);
+              }
+              lastelm = elemCurrent;
           }
       })
   } );
